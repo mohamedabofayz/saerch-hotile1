@@ -2,174 +2,193 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>بحث الفنادق</title>
+  <title>دليل تشغيل الفنادق</title>
+
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
-    /* صندوق الاقتراحات المنبثق */
-    #suggestionsBox {
-      position: absolute;
-      z-index: 1000;
-      width: 100%;
-      background: white;
-      border-radius: 0.5rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      max-height: 220px;
-      overflow-y: auto;
-      display: none;
-    }
-    #suggestionsBox div:hover {
-      background: #f1f5f9;
-      cursor: pointer;
-    }
+    body { font-family: 'Tajawal', sans-serif; }
   </style>
 </head>
 
-<body class="bg-gray-100">
+<body class="bg-gray-50">
 
-  <div class="max-w-3xl mx-auto p-6 mt-10">
-
-    <!-- عنوان -->
-    <h1 class="text-3xl font-bold mb-6 text-center text-blue-700">
-      🔍 بحث عن شركات تشغيل الفنادق
+  <div class="max-w-3xl mx-auto mt-10 p-6">
+    <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">
+      🔍 البحث عن شركات تشغيل الفنادق
     </h1>
 
-    <!-- خانة البحث -->
-    <div class="relative">
-      <input id="searchInput"
-             type="text"
-             placeholder="أكتب اسم الفندق…"
-             class="w-full p-4 text-lg border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
-      <div id="suggestionsBox"></div>
+    <!-- صندوق البحث -->
+    <div class="relative mb-6">
+      <input id="q"
+        type="text"
+        placeholder="اكتب اسم الفندق…"
+        class="w-full p-4 rounded-xl border text-lg border-gray-300 focus:outline-none shadow-sm">
+
+      <!-- قائمة الاقتراحات -->
+      <div id="suggestions"
+           class="bg-white shadow-xl rounded-xl border border-gray-200 hidden absolute w-full mt-1 z-50 max-h-64 overflow-y-auto"></div>
     </div>
 
     <!-- النتائج -->
-    <div id="results" class="mt-8 space-y-4"></div>
-
+    <div id="results"></div>
   </div>
 
-<script>
-// رابط API
-const API_URL = "https://script.google.com/macros/s/AKfycbx1KTtXXjV8s5s26fAmrF2MVqnaVUbsmApVbacMeXvLGVcrfZ6pdVqAxnUbzCpqPNrCug/exec?hotel=";
+  <script>
 
-//===============*
-//   Live Search
-//===============*
+  const API_URL = "https://script.google.com/macros/s/AKfycbx1KTtXXjV8s5s26fAmrF2MVqnaVUbsmApVbacMeXvLGVcrfZ6pdVqAxnUbzCpqPNrCug/exec";
+  const API_KEY = "123";
 
-const input = document.getElementById("searchInput");
-const suggestionsBox = document.getElementById("suggestionsBox");
+  const q = document.getElementById("q");
+  const results = document.getElementById("results");
+  let allHotels = [];
 
-// تخزين كل الفنادق للبحث الفوري
-let hotelList = [];
-
-// جلب قائمة الفنادق مرة واحدة
-async function loadHotelsList() {
-  try {
-    const response = await fetch(API_URL + "all");
-    const data = await response.json();
-
-    hotelList = [...new Set(data.map(d => d.hotel))]; // قائمة فريدة
-  } catch (e) {
-    console.error("Error loading hotel list", e);
-  }
-}
-
-loadHotelsList();
-
-// عرض الاقتراحات أثناء الكتابة
-input.addEventListener("input", () => {
-  const value = input.value.trim();
-
-  if (value.length < 2) {
-    suggestionsBox.style.display = "none";
-    return;
+  //-----------------------------------------
+  // JSONP Fetch
+  //-----------------------------------------
+  function jsonpFetch(url){
+    return new Promise(resolve => {
+      const callback = "cb_" + Math.random().toString(36).substring(2);
+      window[callback] = data => {
+        resolve(data);
+        script.remove();
+      };
+      const script = document.createElement("script");
+      script.src = `${url}&callback=${callback}`;
+      document.body.appendChild(script);
+    });
   }
 
-  const suggestions = hotelList.filter(h =>
-    h.toLowerCase().includes(value.toLowerCase())
-  );
-
-  if (suggestions.length === 0) {
-    suggestionsBox.style.display = "none";
-    return;
+  //-----------------------------------------
+  // تحميل قائمة أسماء الفنادق كاملة
+  //-----------------------------------------
+  async function loadHotelsList(){
+    const url = `${API_URL}?action=getAllHotels&key=${API_KEY}`;
+    const data = await jsonpFetch(url);
+    allHotels = data.list || [];
   }
+  loadHotelsList();
 
-  suggestionsBox.innerHTML = suggestions
-    .map(s => `<div class="p-3 border-b">${s}</div>`)
-    .join("");
+  //-----------------------------------------
+  // إظهار الاقتراحات
+  //-----------------------------------------
+  function showSuggestions(text){
+    const box = document.getElementById("suggestions");
 
-  suggestionsBox.style.display = "block";
-});
-
-// اختيار من الاقتراحات
-suggestionsBox.addEventListener("click", (e) => {
-  input.value = e.target.innerText;
-  suggestionsBox.style.display = "none";
-  searchHotel();
-});
-
-//===============*
-//  البحث الرئيسي
-//===============*
-async function searchHotel() {
-  const hotel = input.value.trim();
-  if (!hotel) return;
-
-  const resultsBox = document.getElementById("results");
-  resultsBox.innerHTML = `<p class="text-gray-600">جاري البحث…</p>`;
-
-  try {
-    const response = await fetch(API_URL + encodeURIComponent(hotel));
-    const data = await response.json();
-
-    if (data.length === 0) {
-      resultsBox.innerHTML = `<p class="text-red-600 text-lg">❌ لا يوجد نتائج</p>`;
+    if(!text || text.length < 2){
+      box.classList.add("hidden");
       return;
     }
 
-    resultsBox.innerHTML = data.map(d => createCompanyCard(d)).join("");
+    const filtered = allHotels.filter(h =>
+      h.toLowerCase().includes(text.toLowerCase())
+    );
 
-  } catch (error) {
-    resultsBox.innerHTML = `<p class="text-red-600">⚠ حدث خطأ في البحث</p>`;
+    if(filtered.length === 0){
+      box.classList.add("hidden");
+      return;
+    }
+
+    box.innerHTML = filtered
+      .slice(0, 10)
+      .map(item => `
+        <div class="px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-700"
+             onclick="selectSuggestion('${item}')">
+          ${item}
+        </div>
+      `)
+      .join("");
+
+    box.classList.remove("hidden");
   }
-}
 
-//===============*
-// بطاقة الشركة
-//===============*
-function createCompanyCard(d) {
-  // تجهيز الإيميلات
-  const emails = d.emails
-    .map(email => `<a href="mailto:${email}" class="text-blue-600 underline">${email}</a>`)
-    .join("<br>");
+  function selectSuggestion(name){
+    q.value = name;
+    document.getElementById("suggestions").classList.add("hidden");
+    runSearch(name);
+  }
 
-  // تجهيز الأرقام
-  const phones = d.phones.map(p => `
-      <div class="flex items-center gap-2 mb-1">
-        <a href="tel:${p}" class="text-green-700 font-bold underline">${p}</a>
-        <a href="https://wa.me/${p.replace(/\D/g, '')}" target="_blank">
-          <img src="https://img.icons8.com/color/28/whatsapp--v1.png"/>
-        </a>
+  //-----------------------------------------
+  // بحث فوري مع تأخير بسيط
+  //-----------------------------------------
+  let typingTimer;
+  function debounceSearch(){
+    clearTimeout(typingTimer);
+    typingTimer = setTimeout(() => {
+      if(q.value.trim().length >= 2){
+        runSearch(q.value.trim());
+      }
+    }, 300);
+  }
+
+  q.addEventListener("input", () => {
+    showSuggestions(q.value.trim());
+    debounceSearch();
+  });
+
+  //-----------------------------------------
+  // تنفيذ البحث
+  //-----------------------------------------
+  function runSearch(text){
+    const url = `${API_URL}?action=getHotel&name=${encodeURIComponent(text)}&key=${API_KEY}`;
+
+    results.innerHTML = `
+      <div class="p-4 bg-white rounded-xl shadow text-center text-gray-600">
+        ⏳ جاري البحث…
+      </div>`;
+
+    jsonpFetch(url).then(data => render(data));
+  }
+
+  //-----------------------------------------
+  // عرض البيانات
+  //-----------------------------------------
+  function render(data){
+    if(!data || !data.hotel){
+      results.innerHTML = `
+        <div class="p-5 bg-white rounded-xl shadow text-center text-red-600 font-bold">
+          ❌ الفندق غير موجود
+        </div>`;
+      return;
+    }
+
+    const items = data.results || [];
+
+    results.innerHTML = `
+      <div class="bg-white rounded-xl shadow p-6">
+        <h2 class="text-2xl font-bold mb-4 text-gray-700">🏨 ${data.hotel}</h2>
+
+        ${items.map(company => `
+          <div class="border rounded-xl p-4 mb-4 bg-gray-50">
+            <h3 class="text-xl font-semibold text-blue-800 mb-2">
+              🏢 ${company.company}
+            </h3>
+
+            ${company.phones.map(num => `
+              <div class="flex items-center gap-3 mb-1 text-gray-700">
+                <a href="tel:${num}" class="text-blue-600 underline text-lg">${num}</a>
+
+                <a href="https://wa.me/${num.replace(/\D/g,'')}"
+                   target="_blank"
+                   class="text-green-600 text-2xl">
+                  💬
+                </a>
+              </div>
+            `).join("")}
+
+            ${company.emails.map(mail => `
+              <div>
+                <a href="mailto:${mail}" class="text-purple-700 underline">${mail}</a>
+              </div>
+            `).join("")}
+          </div>
+        `).join("")}
       </div>
-  `).join("");
+    `;
+  }
 
-  return `
-    <div class="bg-white p-5 rounded-xl shadow">
-      <h2 class="text-xl font-bold text-blue-800">${d.company}</h2>
-
-      <p class="mt-2 text-gray-600"><strong>البريد الإلكتروني:</strong><br>${emails}</p>
-
-      <p class="mt-2 text-gray-600"><strong>أرقام التواصل:</strong><br>${phones}</p>
-    </div>
-  `;
-}
-
-// زر Enter للبحث
-input.addEventListener("keyup", (e) => {
-  if (e.key === "Enter") searchHotel();
-});
-</script>
+  </script>
 
 </body>
 </html>
