@@ -80,13 +80,13 @@ function showSuggestions(text){
 function selectSuggestion(name){
   q.value = name;
   suggestionsBox.classList.add("hidden");
-  runSearch(name);
+  runSearch(name, true); // Exact match عند اختيار اقتراح
 }
 
 /* Run search */
-function runSearch(text){
+function runSearch(text, exact=false){
   results.innerHTML = `<div class="p-4 bg-white rounded-xl shadow">جاري التحميل...</div>`;
-  const url = `${API_URL}?action=getHotel&name=${encodeURIComponent(text)}&key=${API_KEY}`;
+  const url = `${API_URL}?action=getHotel&name=${encodeURIComponent(text)}&exact=${exact}&key=${API_KEY}`;
   jsonpFetch(url).then(data => render(data)).catch(err => {
     results.innerHTML = `<div class="p-4 bg-red-200 text-red-900 rounded-xl">${err.message}</div>`;
   });
