@@ -3,27 +3,32 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>بحث شركات تشغيل الفنادق</title>
+  <title>البحث عن شركات تشغيل الفنادق</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: "Tajawal", sans-serif; }
+  </style>
 </head>
-<body class="bg-gray-50 min-h-screen font-sans p-6">
-  <div class="max-w-3xl mx-auto">
-    <h1 class="text-2xl font-semibold mb-4">🔎 البحث السريع عن الفندق</h1>
 
-    <div class="mb-4">
-      <input id="q" type="search" placeholder="اكتب اسم الفندق..." class="w-full p-3 rounded shadow-sm border" />
+<body class="bg-gray-100 min-h-screen p-6">
+
+  <div class="max-w-4xl mx-auto">
+
+    <h1 class="text-3xl font-bold mb-6 text-gray-800">🔎 البحث عن شركات تشغيل الفنادق</h1>
+
+    <div class="mb-6">
+      <input id="q" type="search" placeholder="اكتب اسم الفندق..." 
+             class="w-full p-4 rounded-xl shadow border border-gray-300 focus:ring focus:ring-blue-300" />
     </div>
 
-    <div id="results" class="space-y-3"></div>
-
-    <p class="text-sm text-gray-500 mt-6">واجهة سريعة: ستعرض كل شركات التشغيل المرتبطة باسم الفندق. (Live Search)</p>
+    <div id="results" class="space-y-4"></div>
   </div>
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbx1KTtXXjV8s5s26fAmrF2MVqnaVUbsmApVbacMeXvLGVcrfZ6pdVqAxnUbzCpqPNrCug/exec";
-const API_KEY = "123"; // ضع هنا الـ API Key نفسه
+const API_KEY = "123";
 
-// JSONP helper (returns Promise)
+/* JSONP fetch helper */
 function jsonpFetch(url){
   return new Promise((resolve, reject) => {
     const callbackName = "cb_" + Math.random().toString(36).substr(2,9);
@@ -33,66 +38,124 @@ function jsonpFetch(url){
       script.remove();
     };
     const script = document.createElement("script");
-    script.src = url + (url.indexOf("?") === -1 ? "?" : "&") + "callback=" + callbackName;
-    script.onerror = () => { reject(new Error("Network error")); delete window[callbackName]; script.remove(); };
+    script.src = url + (url.includes("?") ? "&" : "?") + "callback=" + callbackName;
+    script.onerror = () => reject(new Error("Network error"));
     document.body.appendChild(script);
   });
 }
 
-let timeoutId = null;
+let timer = null;
 const q = document.getElementById("q");
 const results = document.getElementById("results");
 
+/* input handler */
 q.addEventListener("input", () => {
-  clearTimeout(timeoutId);
+  clearTimeout(timer);
   const val = q.value.trim();
   if (!val) { results.innerHTML = ""; return; }
-  // debounce 300ms
-  timeoutId = setTimeout(async () => {
-    results.innerHTML = `<div class="p-3 bg-white rounded shadow">جاري البحث...</div>`;
+
+  timer = setTimeout(async () => {
+    results.innerHTML = `
+      <div class="p-4 bg-white rounded-xl shadow text-gray-600">
+        جاري البحث...
+      </div>`;
     try {
-      const url = `${API_URL}?action=getHotel&name=${encodeURIComponent(val)}&key=${encodeURIComponent(API_KEY)}`;
+      const url = `${API_URL}?action=getHotel&name=${encodeURIComponent(val)}&key=${API_KEY}`;
       const data = await jsonpFetch(url);
-      renderResults(data);
-    } catch (err) {
-      results.innerHTML = `<div class="p-3 bg-red-50 text-red-600 rounded">فشل الاتصال: ${err.message}</div>`;
+      render(data);
+    } catch(err){
+      results.innerHTML = `<div class="p-4 bg-red-200 text-red-900 rounded-xl">${err.message}</div>`;
     }
   }, 300);
 });
 
-function renderResults(data){
-  if (!data || data.error) {
-    results.innerHTML = `<div class="p-3 bg-yellow-50 rounded">${data && data.error ? data.error : "لا توجد نتيجة"}</div>`;
+/* Rendering Search Result */
+function render(data){
+  if (!data.exists){
+    results.innerHTML = `
+        <div class="p-4 bg-yellow-100 rounded-xl text-gray-700">
+          لا يوجد فندق بهذا الاسم.
+        </div>`;
     return;
   }
-  if (!data.exists) {
-    results.innerHTML = `<div class="p-3 bg-white rounded">لا يوجد فندق بنفس الاسم.</div>`;
-    return;
+
+  let html = "";
+
+  data.results.forEach(hotel => {
+    html += `
+      <div class="p-5 bg-white rounded-2xl shadow border border-gray-200">
+        <h2 class="text-2xl font-bold text-blue-700 mb-4">
+          🏨 ${hotel.hotelName}
+        </h2>
+
+        ${renderOperators(hotel.operators)}
+      </div>`;
+  });
+
+  results.innerHTML = html;
+}
+
+/* Rendering Operator Cards */
+function renderOperators(list){
+  if (list.length === 0){
+    return `<p class="text-gray-500">لا توجد شركات تشغيل مرتبطة بهذا الفندق.</p>`;
   }
-  // data.results may contain multiple hotels
-  results.innerHTML = data.results.map(h => `
-    <div class="p-4 bg-white rounded shadow">
-      <div class="flex justify-between items-center">
-        <div>
-          <div class="text-lg font-medium">${h.hotelName}</div>
-          <div class="text-xs text-gray-500">معرف الفندق: ${h.hotelID}</div>
+
+  let html = `
+    <div class="grid gap-4">
+  `;
+
+  list.forEach(op => {
+    const emails = op.emails ? op.emails.split(",") : [];
+    const whats = op.whatsapps ? op.whatsapps.split(",") : [];
+
+    html += `
+      <div class="p-4 bg-gray-50 border rounded-xl shadow-sm">
+
+        <h3 class="text-xl font-semibold text-gray-800 mb-3">
+          👔 ${op.operatorName}
+        </h3>
+
+        <div class="mb-3">
+          <h4 class="font-semibold text-gray-600 mb-1">📧 البريد الإلكتروني:</h4>
+          ${emails.length > 0 ? emails.map(e => `
+            <a href="mailto:${e.trim()}" 
+               class="text-blue-700 underline block">${e.trim()}</a>
+          `).join("") 
+          : `<span class="text-gray-500">لا يوجد</span>`}
         </div>
-        <div class="text-sm text-gray-600">${h.operators.length} شركة</div>
+
+        <div>
+          <h4 class="font-semibold text-gray-600 mb-1">📱 أرقام التواصل:</h4>
+          ${whats.length > 0 ? whats.map(num => {
+            const clean = num.replace(/\D/g, "");
+            return `
+              <div class="flex items-center gap-3 mb-1">
+
+                <a href="tel:${clean}" 
+                   class="text-green-700 font-medium underline">
+                   ${num.trim()}
+                </a>
+
+                <a href="https://wa.me/${clean}" target="_blank"
+                   class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md text-sm">
+                   واتساب
+                </a>
+
+              </div>
+            `;
+          }).join("") 
+          : `<span class="text-gray-500">لا يوجد</span>`}
+        </div>
+
       </div>
-      <div class="mt-3 space-y-2">
-        ${h.operators.length === 0 ? `<div class="text-sm text-gray-500">لا توجد شركات مرتبطة</div>` :
-          h.operators.map(op => `
-            <div class="p-2 border rounded">
-              <div class="font-semibold">${op.operatorName}</div>
-              <div class="text-xs text-gray-600 break-words">البريد: ${op.emails || "-"}</div>
-              <div class="text-xs text-gray-600 break-words">واتساب: ${op.whatsapps || "-"}</div>
-            </div>
-          `).join("")
-        }
-      </div>
-    </div>
-  `).join("");
+    `;
+  });
+
+  html += `</div>`;
+  return html;
 }
 </script>
+
 </body>
 </html>
