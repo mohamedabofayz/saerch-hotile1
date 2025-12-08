@@ -5,24 +5,21 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>البحث عن شركات تشغيل الفنادق</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body { font-family: "Tajawal", sans-serif; }
-  </style>
+  <style>body { font-family: "Tajawal", sans-serif; }</style>
 </head>
 
 <body class="bg-gray-100 min-h-screen p-6">
-
 <div class="max-w-4xl mx-auto">
 
-  <h1 class="text-3xl font-bold mb-6 text-gray-800">🔎 البحث عن شركات تشغيل الفنادق</h1>
+<h1 class="text-3xl font-bold mb-6 text-gray-800">🔎 البحث عن شركات تشغيل الفنادق</h1>
 
-  <div class="mb-6 relative">
-    <input id="q" type="search" placeholder="اكتب اسم الفندق..." 
-           class="w-full p-4 rounded-xl shadow border border-gray-300 focus:ring focus:ring-blue-300" autocomplete="off"/>
-    <div id="suggestions" class="bg-white shadow rounded-xl border border-gray-200 hidden absolute w-full mt-1 z-50"></div>
-  </div>
+<div class="mb-6 relative">
+  <input id="q" type="search" placeholder="اكتب اسم الفندق..." 
+         class="w-full p-4 rounded-xl shadow border border-gray-300 focus:ring focus:ring-blue-300" autocomplete="off"/>
+  <div id="suggestions" class="bg-white shadow rounded-xl border border-gray-200 hidden absolute w-full mt-1 z-50"></div>
+</div>
 
-  <div id="results" class="space-y-4"></div>
+<div id="results" class="space-y-4"></div>
 </div>
 
 <script>
@@ -33,11 +30,7 @@ const API_KEY = "123";
 function jsonpFetch(url){
   return new Promise((resolve, reject) => {
     const callbackName = "cb_" + Math.random().toString(36).substr(2,9);
-    window[callbackName] = data => {
-      resolve(data);
-      delete window[callbackName];
-      script.remove();
-    };
+    window[callbackName] = data => { resolve(data); delete window[callbackName]; script.remove(); };
     const script = document.createElement("script");
     script.src = url + (url.includes("?") ? "&" : "?") + "callback=" + callbackName;
     script.onerror = () => reject(new Error("Network error"));
@@ -45,56 +38,42 @@ function jsonpFetch(url){
   });
 }
 
-/* ----------------- Load all hotels for suggestions ----------------- */
-let allHotels = [];
-async function loadHotelsList(){
-  try{
-    const url = `${API_URL}?action=getAllHotels&key=${API_KEY}`;
-    const data = await jsonpFetch(url);
-    allHotels = data.list || [];
-  }catch(err){
-    console.error("خطأ عند جلب قائمة الفنادق:", err);
-  }
-}
-loadHotelsList();
-
-/* ----------------- Elements ----------------- */
+/* Elements */
 const q = document.getElementById("q");
 const results = document.getElementById("results");
 const suggestionsBox = document.getElementById("suggestions");
 
-/* ----------------- Debounce search ----------------- */
+/* Load all hotels for autocomplete */
+let allHotels = [];
+async function loadHotelsList(){
+  try {
+    const data = await jsonpFetch(`${API_URL}?action=getAllHotels&key=${API_KEY}`);
+    allHotels = data.list || [];
+  } catch(err){ console.error("Error loading hotel list:", err); }
+}
+loadHotelsList();
+
+/* Debounce */
 let timer = null;
 q.addEventListener("input", () => {
   showSuggestions(q.value.trim());
   clearTimeout(timer);
   timer = setTimeout(() => {
-    if(q.value.trim().length >= 2){
+    if(q.value.trim().length >= 1){
       runSearch(q.value.trim());
     }
   }, 300);
 });
 
-/* ----------------- Show suggestions ----------------- */
+/* Suggestions */
 function showSuggestions(text){
-  if(!text || text.length < 2){
-    suggestionsBox.classList.add("hidden");
-    return;
-  }
-
-  const filtered = allHotels.filter(h => h.includes(text));
-  if(filtered.length === 0){
-    suggestionsBox.classList.add("hidden");
-    return;
-  }
-
+  if(!text || text.length < 1){ suggestionsBox.classList.add("hidden"); return; }
+  const filtered = allHotels.filter(h => h.toLowerCase().includes(text.toLowerCase()));
+  if(filtered.length === 0){ suggestionsBox.classList.add("hidden"); return; }
   suggestionsBox.innerHTML = filtered.slice(0,7).map(item => `
     <div class="px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-700"
-         onclick="selectSuggestion('${item.replace(/'/g,"\\'")}')">
-      ${item}
-    </div>
+         onclick="selectSuggestion('${item.replace(/'/g,"\\'")}')">${item}</div>
   `).join("");
-
   suggestionsBox.classList.remove("hidden");
 }
 
@@ -104,7 +83,7 @@ function selectSuggestion(name){
   runSearch(name);
 }
 
-/* ----------------- Run search ----------------- */
+/* Run search */
 function runSearch(text){
   results.innerHTML = `<div class="p-4 bg-white rounded-xl shadow">جاري التحميل...</div>`;
   const url = `${API_URL}?action=getHotel&name=${encodeURIComponent(text)}&key=${API_KEY}`;
@@ -113,60 +92,43 @@ function runSearch(text){
   });
 }
 
-/* ----------------- Render search results ----------------- */
+/* Render results */
 function render(data){
   if(!data.exists){
-    results.innerHTML = `
-      <div class="p-4 bg-yellow-100 rounded-xl text-gray-700">
-        لا يوجد فندق بهذا الاسم.
-      </div>`;
+    results.innerHTML = `<div class="p-4 bg-yellow-100 rounded-xl text-gray-700">لا يوجد فندق بهذا الاسم.</div>`;
     return;
   }
-
   let html = "";
   data.results.forEach(hotel => {
-    html += `
-      <div class="p-5 bg-white rounded-2xl shadow border border-gray-200">
-        <h2 class="text-2xl font-bold text-blue-700 mb-4">🏨 ${hotel.hotelName}</h2>
-        ${renderOperators(hotel.operators)}
-      </div>`;
+    html += `<div class="p-5 bg-white rounded-2xl shadow border border-gray-200">
+      <h2 class="text-2xl font-bold text-blue-700 mb-4">🏨 ${hotel.hotelName}</h2>
+      ${renderOperators(hotel.operators)}
+    </div>`;
   });
-
   results.innerHTML = html;
 }
 
-/* ----------------- Render operators ----------------- */
 function renderOperators(list){
-  if(list.length === 0){
-    return `<p class="text-gray-500">لا توجد شركات تشغيل مرتبطة بهذا الفندق.</p>`;
-  }
-
+  if(list.length === 0) return `<p class="text-gray-500">لا توجد شركات تشغيل مرتبطة بهذا الفندق.</p>`;
   let html = `<div class="grid gap-4">`;
   list.forEach(op => {
     const emails = op.emails ? op.emails.split(",") : [];
     const whats = op.whatsapps ? op.whatsapps.split(",") : [];
-
-    html += `
-      <div class="p-4 bg-gray-50 border rounded-xl shadow-sm">
-        <h3 class="text-xl font-semibold text-gray-800 mb-3">👔 ${op.operatorName}</h3>
-
-        <div class="mb-3">
-          <h4 class="font-semibold text-gray-600 mb-1">📧 البريد الإلكتروني:</h4>
-          ${emails.length>0 ? emails.map(e=>`<a href="mailto:${e.trim()}" class="text-blue-700 underline block">${e.trim()}</a>`).join("") : `<span class="text-gray-500">لا يوجد</span>`}
-        </div>
-
-        <div>
-          <h4 class="font-semibold text-gray-600 mb-1">📱 أرقام التواصل:</h4>
-          ${whats.length>0 ? whats.map(num=>{
-            const clean = num.replace(/\D/g,"");
-            return `
-              <div class="flex items-center gap-3 mb-1">
-                <a href="tel:${clean}" class="text-green-700 font-medium underline">${num.trim()}</a>
-                <a href="https://wa.me/${clean}" target="_blank" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md text-sm">واتساب</a>
-              </div>`;
-          }).join("") : `<span class="text-gray-500">لا يوجد</span>`}
-        </div>
-      </div>`;
+    html += `<div class="p-4 bg-gray-50 border rounded-xl shadow-sm">
+      <h3 class="text-xl font-semibold text-gray-800 mb-3">👔 ${op.operatorName}</h3>
+      <div class="mb-3"><h4 class="font-semibold text-gray-600 mb-1">📧 البريد الإلكتروني:</h4>
+        ${emails.length>0 ? emails.map(e=>`<a href="mailto:${e.trim()}" class="text-blue-700 underline block">${e.trim()}</a>`).join("") : `<span class="text-gray-500">لا يوجد</span>`}
+      </div>
+      <div><h4 class="font-semibold text-gray-600 mb-1">📱 أرقام التواصل:</h4>
+        ${whats.length>0 ? whats.map(num=>{
+          const clean = num.replace(/\D/g,"");
+          return `<div class="flex items-center gap-3 mb-1">
+            <a href="tel:${clean}" class="text-green-700 font-medium underline">${num.trim()}</a>
+            <a href="https://wa.me/${clean}" target="_blank" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md text-sm">واتساب</a>
+          </div>`;
+        }).join("") : `<span class="text-gray-500">لا يوجد</span>`}
+      </div>
+    </div>`;
   });
   html += `</div>`;
   return html;
