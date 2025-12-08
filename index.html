@@ -5,7 +5,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>البحث عن شركات تشغيل الفنادق</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<style>body { font-family: "Tajawal", sans-serif; }</style>
+<style>
+  body { font-family: "Tajawal", sans-serif; }
+  /* تحسين شكل القائمة المنسدلة */
+  #suggestions { max-height: 300px; overflow-y: auto; }
+</style>
 </head>
 <body class="bg-gray-100 min-h-screen p-6">
 <div class="max-w-4xl mx-auto">
@@ -14,14 +18,17 @@
 
 <div class="mb-6 relative">
   <input id="q" type="search" placeholder="اكتب اسم الفندق..." 
-         class="w-full p-4 rounded-xl shadow border border-gray-300 focus:ring focus:ring-blue-300" autocomplete="off"/>
-  <div id="suggestions" class="bg-white shadow rounded-xl border border-gray-200 hidden absolute w-full mt-1 z-50"></div>
+         class="w-full p-4 rounded-xl shadow border border-gray-300 focus:ring focus:ring-blue-300" 
+         autocomplete="off" />
+  
+  <div id="suggestions" class="bg-white shadow-xl rounded-xl border border-gray-200 hidden absolute w-full mt-1 z-50"></div>
 </div>
 
 <div id="results" class="space-y-4"></div>
 </div>
 
 <script>
+// ⚠️ ضع رابط السكربت الجديد الخاص بك هنا
 const API_URL = "https://script.google.com/macros/s/AKfycbx1KTtXXjV8s5s26fAmrF2MVqnaVUbsmApVbacMeXvLGVcrfZ6pdVqAxnUbzCpqPNrCug/exec";
 const API_KEY = "123";
 
@@ -42,63 +49,86 @@ const q = document.getElementById("q");
 const results = document.getElementById("results");
 const suggestionsBox = document.getElementById("suggestions");
 
-/* Load all hotels */
-let allHotels = [];
+/* 1. تحميل القائمة عند فتح الصفحة */
+let allHotels = []; // ستخزن كائنات {id, name}
 async function loadHotelsList(){
   try {
     const data = await jsonpFetch(`${API_URL}?action=getAllHotels&key=${API_KEY}`);
     allHotels = data.list || [];
-  } catch(err){ console.error(err); }
+    console.log("Hotels loaded:", allHotels.length);
+  } catch(err){ console.error("فشل تحميل القائمة", err); }
 }
 loadHotelsList();
 
-/* Debounce */
-let timer = null;
+/* 2. التعامل مع الكتابة (إظهار الاقتراحات فقط) */
 q.addEventListener("input", () => {
-  showSuggestions(q.value.trim());
-  clearTimeout(timer);
-  timer = setTimeout(() => {
-    if(q.value.trim().length >= 1) runSearch(q.value.trim());
-  }, 300);
+  const val = q.value.trim();
+  if(val.length < 1) {
+    suggestionsBox.classList.add("hidden");
+    return;
+  }
+  
+  // تصفية القائمة
+  const filtered = allHotels.filter(h => h.name.toLowerCase().includes(val.toLowerCase()));
+  
+  renderSuggestions(filtered);
 });
 
-/* Suggestions */
-function showSuggestions(text){
-  if(!text || text.length < 1){ suggestionsBox.classList.add("hidden"); return; }
-  const filtered = allHotels.filter(h => h.toLowerCase().includes(text.toLowerCase()));
-  if(filtered.length === 0){ suggestionsBox.classList.add("hidden"); return; }
-  suggestionsBox.innerHTML = filtered.slice(0,7).map(item => `
-    <div class="px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-700"
-         onclick="selectSuggestion('${item.replace(/'/g,"\\'")}')">${item}</div>
+/* عرض الاقتراحات */
+function renderSuggestions(list){
+  if(list.length === 0){
+    suggestionsBox.classList.add("hidden");
+    return;
+  }
+  
+  // نأخذ أول 10 نتائج فقط
+  suggestionsBox.innerHTML = list.slice(0, 10).map(item => `
+    <div class="px-4 py-3 hover:bg-blue-50 cursor-pointer text-gray-700 border-b last:border-0 transition"
+         onclick="selectSuggestion('${item.name.replace(/'/g, "\\'")}')">
+       🏨 ${item.name}
+    </div>
   `).join("");
+  
   suggestionsBox.classList.remove("hidden");
 }
 
+/* 3. عند اختيار فندق من القائمة (المطابقة 100%) */
 function selectSuggestion(name){
-  q.value = name;
-  suggestionsBox.classList.add("hidden");
-  runSearch(name, true); // exact match
+  q.value = name; // وضع الاسم في الحقل
+  suggestionsBox.classList.add("hidden"); // إخفاء القائمة
+  runSearch(name, true); // ⚠️ True تعني بحث دقيق 100%
 }
 
-/* Run search */
-function runSearch(text, exact=false){
-  results.innerHTML = `<div class="p-4 bg-white rounded-xl shadow">جاري التحميل...</div>`;
+/* تنفيذ البحث */
+function runSearch(text, exact){
+  results.innerHTML = `<div class="p-4 bg-white rounded-xl shadow animate-pulse">جاري البحث عن "${text}"...</div>`;
+  
   const url = `${API_URL}?action=getHotel&name=${encodeURIComponent(text)}&exact=${exact}&key=${API_KEY}`;
-  jsonpFetch(url).then(data => render(data)).catch(err => {
-    results.innerHTML = `<div class="p-4 bg-red-200 text-red-900 rounded-xl">${err.message}</div>`;
+  
+  jsonpFetch(url).then(data => {
+    if(data.error) throw new Error(data.error);
+    render(data);
+  }).catch(err => {
+    results.innerHTML = `<div class="p-4 bg-red-100 text-red-700 rounded-xl">حدث خطأ: ${err.message}</div>`;
   });
 }
 
-/* Render results */
+/* رسم النتائج */
 function render(data){
-  if(!data.exists){
-    results.innerHTML = `<div class="p-4 bg-yellow-100 rounded-xl text-gray-700">لا يوجد فندق بهذا الاسم.</div>`;
+  if(!data.exists || !data.results || data.results.length === 0){
+    results.innerHTML = `<div class="p-6 bg-yellow-50 border border-yellow-200 rounded-xl text-center">
+      <p class="text-xl text-yellow-800 font-bold">⚠️ عذراً</p>
+      <p class="text-gray-600 mt-2">لا يوجد فندق مطابق لهذا الاسم تماماً في قاعدة البيانات.</p>
+    </div>`;
     return;
   }
+
   let html = "";
   data.results.forEach(hotel => {
-    html += `<div class="p-5 bg-white rounded-2xl shadow border border-gray-200">
-      <h2 class="text-2xl font-bold text-blue-700 mb-4">🏨 ${hotel.hotelName}</h2>
+    html += `<div class="p-6 bg-white rounded-2xl shadow-md border border-gray-100 mb-4">
+      <h2 class="text-2xl font-bold text-blue-800 mb-6 flex items-center gap-2">
+        <span>🏨</span> ${hotel.hotelName}
+      </h2>
       ${renderOperators(hotel.operators)}
     </div>`;
   });
@@ -106,29 +136,42 @@ function render(data){
 }
 
 function renderOperators(list){
-  if(list.length === 0) return `<p class="text-gray-500">لا توجد شركات تشغيل مرتبطة بهذا الفندق.</p>`;
-  let html = `<div class="grid gap-4">`;
-  list.forEach(op => {
-    const emails = op.emails ? op.emails.split(",") : [];
-    const whats = op.whatsapps ? op.whatsapps.split(",") : [];
-    html += `<div class="p-4 bg-gray-50 border rounded-xl shadow-sm">
-      <h3 class="text-xl font-semibold text-gray-800 mb-3">👔 ${op.operatorName}</h3>
-      <div class="mb-3"><h4 class="font-semibold text-gray-600 mb-1">📧 البريد الإلكتروني:</h4>
-        ${emails.length>0 ? emails.map(e=>`<a href="mailto:${e.trim()}" class="text-blue-700 underline block">${e.trim()}</a>`).join("") : `<span class="text-gray-500">لا يوجد</span>`}
-      </div>
-      <div><h4 class="font-semibold text-gray-600 mb-1">📱 أرقام التواصل:</h4>
-        ${whats.length>0 ? whats.map(num=>{
-          const clean = num.replace(/\D/g,"");
-          return `<div class="flex items-center gap-3 mb-1">
-            <a href="tel:${clean}" class="text-green-700 font-medium underline">${num.trim()}</a>
-            <a href="https://wa.me/${clean}" target="_blank" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md text-sm">واتساب</a>
-          </div>`;
-        }).join("") : `<span class="text-gray-500">لا يوجد</span>`}
-      </div>
-    </div>`;
-  });
-  html += `</div>`;
-  return html;
+  if(!list || list.length === 0) return `<div class="bg-gray-50 p-4 rounded-lg text-gray-500 text-center">لا توجد شركات مشغلة مسجلة.</div>`;
+  
+  return `<div class="grid md:grid-cols-2 gap-4">
+    ${list.map(op => {
+      const emails = op.emails ? op.emails.toString().split(",") : [];
+      const whats = op.whatsapps ? op.whatsapps.toString().split(",") : [];
+      
+      return `<div class="p-4 bg-gray-50 border border-gray-200 rounded-xl hover:shadow-md transition">
+        <h3 class="text-lg font-bold text-gray-800 mb-3 border-b pb-2">👔 ${op.operatorName}</h3>
+        
+        <div class="space-y-3">
+          <div>
+            <div class="text-xs font-bold text-gray-500 uppercase mb-1">البريد الإلكتروني</div>
+            ${emails.length ? emails.map(e => 
+              `<a href="mailto:${e.trim()}" class="flex items-center gap-2 text-blue-600 hover:underline text-sm mb-1">
+                 ✉️ ${e.trim()}
+               </a>`
+            ).join("") : '<span class="text-xs text-gray-400">غير متوفر</span>'}
+          </div>
+
+          <div>
+            <div class="text-xs font-bold text-gray-500 uppercase mb-1">أرقام التواصل</div>
+            ${whats.length ? whats.map(num => {
+               const clean = num.replace(/\D/g,"");
+               return `<div class="flex items-center justify-between bg-white p-2 rounded border border-gray-200 mb-1">
+                 <a href="tel:${clean}" class="text-gray-700 font-mono text-sm">${num.trim()}</a>
+                 <a href="https://wa.me/${clean}" target="_blank" class="text-green-600 hover:text-green-700">
+                   <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+                 </a>
+               </div>`;
+            }).join("") : '<span class="text-xs text-gray-400">غير متوفر</span>'}
+          </div>
+        </div>
+      </div>`;
+    }).join("")}
+  </div>`;
 }
 </script>
 </body>
