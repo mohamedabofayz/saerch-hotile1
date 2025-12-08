@@ -1,13 +1,12 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>البحث عن شركات تشغيل الفنادق</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>body { font-family: "Tajawal", sans-serif; }</style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>البحث عن شركات تشغيل الفنادق</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>body { font-family: "Tajawal", sans-serif; }</style>
 </head>
-
 <body class="bg-gray-100 min-h-screen p-6">
 <div class="max-w-4xl mx-auto">
 
@@ -43,13 +42,13 @@ const q = document.getElementById("q");
 const results = document.getElementById("results");
 const suggestionsBox = document.getElementById("suggestions");
 
-/* Load all hotels for autocomplete */
+/* Load all hotels */
 let allHotels = [];
 async function loadHotelsList(){
   try {
     const data = await jsonpFetch(`${API_URL}?action=getAllHotels&key=${API_KEY}`);
     allHotels = data.list || [];
-  } catch(err){ console.error("Error loading hotel list:", err); }
+  } catch(err){ console.error(err); }
 }
 loadHotelsList();
 
@@ -59,9 +58,7 @@ q.addEventListener("input", () => {
   showSuggestions(q.value.trim());
   clearTimeout(timer);
   timer = setTimeout(() => {
-    if(q.value.trim().length >= 1){
-      runSearch(q.value.trim());
-    }
+    if(q.value.trim().length >= 1) runSearch(q.value.trim());
   }, 300);
 });
 
@@ -80,7 +77,7 @@ function showSuggestions(text){
 function selectSuggestion(name){
   q.value = name;
   suggestionsBox.classList.add("hidden");
-  runSearch(name, true); // Exact Match
+  runSearch(name, true); // exact match
 }
 
 /* Run search */
