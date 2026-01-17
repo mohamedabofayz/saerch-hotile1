@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عروض فنادق رمضان 2026</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+:root {
+    --primary-color: #1e3a8a;
+    --secondary-color: #0ea5e9;
+    --accent-color: #f59e0b;
+    --light-color: #f8fafc;
+    --dark-color: #0f172a;
+    --success-color: #10b981;
+    --warning-color: #fbbf24;
+    --danger-color: #ef4444;
+    --border-radius: 12px;
+    --box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    --transition: all 0.3s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    background-color: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    overflow: hidden;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 25px;
+    padding: 15px 0;
+    border-bottom: 3px solid var(--primary-color);
+    background: linear-gradient(120deg, rgba(30, 58, 138, 0.05), rgba(14, 165, 233, 0.05));
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.logo i {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+}
+
+.logo h1 {
+    color: var(--primary-color);
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.subtitle {
+    color: var(--secondary-color);
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+.filter-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin: 20px 0;
+    padding: 15px;
+    background-color: rgba(30, 58, 138, 0.05);
+    border-radius: var(--border-radius);
+}
+
+.search-box {
+    position: relative;
+    width: 300px;
+    min-width: 250px;
+}
+
+.search-box i {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+}
+
+#search-input {
+    width: 100%;
+    padding: 12px 45px 12px 15px;
+    border: 2px solid #cbd5e1;
+    border-radius: 50px;
+    font-size: 16px;
+    font-family: 'Cairo', sans-serif;
+    transition: var(--transition);
+}
+
+#search-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.2);
+    outline: none;
+}
+
+.filters {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+#period-filter, #sort-select {
+    padding: 10px 20px;
+    border: 2px solid #cbd5e1;
+    border-radius: 50px;
+    font-size: 16px;
+    font-family: 'Cairo', sans-serif;
+    background-color: white;
+    transition: var(--transition);
+    min-width: 200px;
+}
+
+#period-filter:focus, #sort-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.2);
+    outline: none;
+}
+
+.stats {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 15px;
+    font-weight: 600;
+    color: var(--dark-color);
+    background-color: rgba(248, 250, 252, 0.7);
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.stats span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.stats span i {
+    color: var(--primary-color);
+}
+
+.loading {
+    text-align: center;
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(30, 58, 138, 0.2);
+    border-top: 5px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading p {
+    color: var(--primary-color);
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+.table-container {
+    overflow-x: auto;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    border-radius: var(--border-radius);
+}
+
+#hotels-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 900px;
+    font-size: 0.95rem;
+    table-layout: auto;
+}
+
+#hotels-table th {
+    background: linear-gradient(120deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    text-align: center;
+    padding: 16px 12px;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+}
+
+#hotels-table td {
+    padding: 14px 12px;
+    text-align: center;
+    border-bottom: 1px solid #e2e8f0;
+    transition: var(--transition);
+}
+
+#hotels-table tr:nth-child(even) {
+    background-color: #f8fafc;
+}
+
+#hotels-table tr:hover {
+    background-color: #dbeafe;
+    transform: translateY(-1px);
+}
+
+.new-hotel {
+    position: relative;
+    background-color: rgba(245, 158, 11, 0.08) !important;
+}
+
+.new-hotel::after {
+    content: "جديد";
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    background-color: var(--accent-color);
+    color: white;
+    font-size: 0.75rem;
+    padding: 3px 8px;
+    border-radius: 15px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transform: rotate(-15deg);
+}
+
+.price {
+    font-weight: 700;
+    color: var(--primary-color);
+    font-size: 1.05rem;
+}
+
+.not-available {
+    color: var(--danger-color);
+    font-style: italic;
+    text-decoration: line-through;
+}
+
+.special {
+    background-color: rgba(16, 185, 129, 0.1);
+}
+
+.number-badge {
+    display: inline-block;
+    width: 26px;
+    height: 26px;
+    background-color: #94a3b8;
+    color: white;
+    border-radius: 50%;
+    font-size: 0.85rem;
+    font-weight: 600;
+    line-height: 26px;
+    margin: 0 auto;
+}
+
+.export-section {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 30px 0;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 12px 25px;
+    background: linear-gradient(120deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn i {
+    font-size: 1.1rem;
+}
+
+footer {
+    text-align: center;
+    padding: 25px 15px;
+    color: #64748b;
+    border-top: 1px solid #e2e8f0;
+    font-size: 0.95rem;
+    margin-top: 20px;
+}
+
+.responsive-info {
+    text-align: center;
+    padding: 15px;
+    color: #64748b;
+    font-style: italic;
+    background-color: #f8fafc;
+    border-radius: var(--border-radius);
+    margin: 20px 0;
+}
+
+@media (max-width: 768px) {
+    .filter-section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .search-box {
+        width: 100%;
+    }
+    
+    .filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    #period-filter, #sort-select {
+        width: 100%;
+        min-width: auto;
+    }
+    
+    .logo h1 {
+        font-size: 2rem;
+    }
+    
+    .logo i {
+        font-size: 2rem;
+    }
+    
+    .export-section {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .btn {
+        width: 100%;
+        max-width: 300px;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .logo h1 {
+        font-size: 1.7rem;
+    }
+    
+    .subtitle {
+        font-size: 1.1rem;
+    }
+    
+    #hotels-table th, #hotels-table td {
+        padding: 10px 8px;
+        font-size: 0.85rem;
+    }
+    
+    .number-badge {
+        width: 22px;
+        height: 22px;
+        line-height: 22px;
+        font-size: 0.75rem;
+    }
+    
+    .new-hotel::after {
+        font-size: 0.65rem;
+        padding: 2px 6px;
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-hotel"></i> عروض فنادق رمضان 1447هـ / 2026م</h1>
+            <div class="filter-container">
+                <input type="text" id="search-input" placeholder="ابحث عن فندق..." />
+                <select id="sort-select">
+                    <option value="default">ترتيب حسب</option>
+                    <option value="price-low">السعر (من الأقل)</option>
+                    <option value="price-high">السعر (من الأعلى)</option>
+                    <option value="name">الاسم (أ-ي)</option>
+                </select>
+            </div>
+        </header>
+        
+        <div class="loading" id="loading">
+            <i class="fas fa-spinner fa-spin"></i> جاري التحميل...
+        </div>
+        
+        <div class="table-container">
+            <table id="hotels-table">
+                <thead>
+                    <tr>
+                        <th>اسم الفندق</th>
+                        <th>تفاصيل الغرفة/الفترة</th>
+                        <th>كامل الشهر</th>
+                        <th>العشر الأوائل</th>
+                        <th>العشر الوسطى</th>
+                        <th>العشر الأواخر</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <!-- سيتم ملء البيانات هنا تلقائياً -->
+                </tbody>
+            </table>
+        </div>
+        
+        <footer>
+            <p>&copy; 2026 جميع الحقوق محفوظة - عروض فنادق رمضان</p>
+        </footer>
+    </div>
+    
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // استبدل هذا الرابط بمعرف النشر الفعلي من Google Script
+    const API_URL = 'https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec';
+    
+    const tableBody = document.getElementById('table-body');
+    const loadingElement = document.getElementById('loading');
+    const searchInput = document.getElementById('search-input');
+    const periodFilter = document.getElementById('period-filter');
+    const sortSelect = document.getElementById('sort-select');
+    const totalHotelsElement = document.getElementById('total-hotels');
+    const newHotelsElement = document.getElementById('new-hotels');
+    const exportExcelBtn = document.getElementById('export-excel');
+    const exportPdfBtn = document.getElementById('export-pdf');
+    
+    let hotelsData = [];
+    
+    // دالة تحميل البيانات من جوجل شيت
+    async function loadHotelsData() {
+        try {
+            loadingElement.style.display = 'flex';
+            tableBody.innerHTML = '';
+            
+            const response = await fetch(API_URL);
+            if (!response.ok) {
+                throw new Error('فشل في تحميل البيانات');
+            }
+            
+            hotelsData = await response.json();
+            displayStatistics();
+            displayHotels(hotelsData);
+        } catch (error) {
+            console.error('خطأ:', error);
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="7" style="color: var(--danger-color); text-align: center; padding: 30px; font-size: 1.2rem;">
+                        <i class="fas fa-exclamation-triangle"></i> حدث خطأ أثناء تحميل البيانات. يرجى المحاولة لاحقاً.
+                    </td>
+                </tr>
+            `;
+        } finally {
+            loadingElement.style.display = 'none';
+        }
+    }
+    
+    // دالة عرض الإحصائيات
+    function displayStatistics() {
+        totalHotelsElement.textContent = hotelsData.length;
+        
+        const newHotelsCount = hotelsData.filter(hotel => 
+            hotel["مميز"].includes("جديد") || hotel["مميز"].includes("new")
+        ).length;
+        
+        newHotelsElement.textContent = newHotelsCount;
+    }
+    
+    // دالة عرض الفنادق في الجدول
+    function displayHotels(hotels) {
+        if (hotels.length === 0) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: 30px; font-size: 1.2rem;">
+                        <i class="fas fa-search"></i> لم يتم العثور على فنادق مطابقة
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+        
+        tableBody.innerHTML = hotels.map(hotel => {
+            const isNewHotel = hotel["مميز"].includes("جديد") || hotel["مميز"].includes("new");
+            const isNumbered = !isNaN(parseInt(hotel["مميز"])) && hotel["مميز"].trim() !== "";
+            const cssClass = isNewHotel ? 'class="new-hotel"' : '';
+            
+            const badge = isNewHotel ? 
+                `<span class="badge"><i class="fas fa-star"></i> جديد</span>` : 
+                (isNumbered ? `<span class="number-badge">${hotel["مميز"]}</span>` : `<span>-</span>`);
+            
+            return `
+                <tr ${cssClass}>
+                    <td>${badge}</td>
+                    <td><strong>${hotel["اسم الفندق"]}</strong></td>
+                    <td>${hotel["تفاصيل الغرفة/الفترة"] || 'غير محدد'}</td>
+                    <td class="${getPriceClass(hotel["كامل الشهر (أو المدة المحددة)"])}">${formatPrice(hotel["كامل الشهر (أو المدة المحددة)"])}</td>
+                    <td class="${getPriceClass(hotel["العشر الأوائل"])}">${formatPrice(hotel["العشر الأوائل"])}</td>
+                    <td class="${getPriceClass(hotel["العشر الوسطى"])}">${formatPrice(hotel["العشر الوسطى"])}</td>
+                    <td class="${getPriceClass(hotel["العشر الأواخر"])}">${formatPrice(hotel["العشر الأواخر"])}</td>
+                </tr>
+            `;
+        }).join('');
+    }
+    
+    // دالة لتنسيق الأسعار
+    function formatPrice(price) {
+        if (!price || price === "غير متاح" || price === "-" || price.trim() === "-") {
+            return "غير متاح";
+        }
+        
+        // إزالة أي أحرف غير رقمية باستثناء الفاصلة العشرية والفاصلة الألفية
+        const cleanedPrice = price.toString().replace(/[^\d.,]/g, '');
+        const num = parseFloat(cleanedPrice.replace(/,/g, ''));
+        
+        if (isNaN(num)) {
+            return price;
+        }
+        
+        return `${num.toLocaleString('ar-EG')} ريال`;
+    }
+    
+    // دالة لتحديد كلاس السعر
+    function getPriceClass(price) {
+        if (!price || price === "غير متاح" || price === "-" || price.trim() === "-") {
+            return 'not-available';
+        }
+        
+        return 'price';
+    }
+    
+    // دالة الفلترة حسب فترة الإقامة
+    function filterByPeriod(hotels) {
+        const period = periodFilter.value;
+        
+        if (period === 'all') return hotels;
+        
+        return hotels.filter(hotel => {
+            switch(period) {
+                case 'full':
+                    return hotel["كامل الشهر (أو المدة المحددة)"] && 
+                           hotel["كامل الشهر (أو المدة المحددة)"] !== "-" && 
+                           hotel["كامل الشهر (أو المدة المحددة)"].trim() !== "-";
+                case 'first':
+                    return hotel["العشر الأوائل"] && 
+                           hotel["العشر الأوائل"] !== "-" && 
+                           hotel["العشر الأوائل"].trim() !== "-";
+                case 'middle':
+                    return hotel["العشر الوسطى"] && 
+                           hotel["العشر الوسطى"] !== "-" && 
+                           hotel["العشر الوسطى"].trim() !== "-";
+                case 'last':
+                    return hotel["العشر الأواخر"] && 
+                           hotel["العشر الأواخر"] !== "-" && 
+                           hotel["العشر الأواخر"].trim() !== "-";
+                default:
+                    return true;
+            }
+        });
+    }
+    
+    // دالة البحث في الفنادق
+    function searchHotels(hotels) {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        if (!searchTerm) return hotels;
+        
+        return hotels.filter(hotel => 
+            hotel["اسم الفندق"].toLowerCase().includes(searchTerm) || 
+            hotel["تفاصيل الغرفة/الفترة"].toLowerCase().includes(searchTerm)
+        );
+    }
+    
+    // دالة الفرز
+    function sortHotels(hotels) {
+        const sortBy = sortSelect.value;
+        
+        return [...hotels].sort((a, b) => {
+            switch(sortBy) {
+                case 'name-asc':
+                    return a["اسم الفندق"].localeCompare(b["اسم الفندق"], 'ar');
+                case 'name-desc':
+                    return b["اسم الفندق"].localeCompare(a["اسم الفندق"], 'ar');
+                case 'price-low':
+                    return extractNumericPrice(a) - extractNumericPrice(b);
+                case 'price-high':
+                    return extractNumericPrice(b) - extractNumericPrice(a);
+                default:
+                    return 0;
+            }
+        });
+    }
+    
+    // استخراج أقل سعر متاح للفندق
+    function extractNumericPrice(hotel) {
+        // أولوية للسعر الكامل للشهر
+        let price = hotel["كامل الشهر (أو المدة المحددة)"];
+        
+        // إذا كان غير متاح، نحاول الحصول على أقل سعر من الفترات الأخرى
+        if (price === "-" || !price || price.trim() === "-") {
+            const prices = [
+                hotel["العشر الأوائل"],
+                hotel["العشر الوسطى"],
+                hotel["العشر الأواخر"]
+            ].filter(p => p && p !== "-" && p.trim() !== "-")
+             .map(p => parseFloat(p.toString().replace(/[^0-9]/g, '')))
+             .filter(num => !isNaN(num));
+            
+            return prices.length > 0 ? Math.min(...prices) : Infinity;
+        }
+        
+        const num = parseFloat(price.toString().replace(/[^0-9]/g, ''));
+        return isNaN(num) ? Infinity : num;
+    }
+    
+    // تحديث العرض بناءً على الفلاتر
+    function updateDisplay() {
+        let filteredHotels = [...hotelsData];
+        
+        // تطبيق الفلاتر بالتتابع
+        filteredHotels = searchHotels(filteredHotels);
+        filteredHotels = filterByPeriod(filteredHotels);
+        filteredHotels = sortHotels(filteredHotels);
+        
+        displayHotels(filteredHotels);
+    }
+    
+    // تصدير البيانات إلى Excel
+    function exportToExcel() {
+        if (hotelsData.length === 0) {
+            alert('لا توجد بيانات للتصدير');
+            return;
+        }
+        
+        const table = document.createElement('table');
+        const headerRow = table.insertRow();
+        
+        // إضافة العناوين
+        const headers = ['مميز', 'اسم الفندق', 'تفاصيل الغرفة/الفترة', 'كامل الشهر', 'العشر الأوائل', 'العشر الوسطى', 'العشر الأواخر'];
+        headers.forEach(header => {
+            const th = document.createElement('th');
+            th.textContent = header;
+            headerRow.appendChild(th);
+        });
+        
+        // إضافة البيانات
+        hotelsData.forEach(hotel => {
+            const row = table.insertRow();
+            
+            const cells = [
+                hotel["مميز"],
+                hotel["اسم الفندق"],
+                hotel["تفاصيل الغرفة/الفترة"],
+                hotel["كامل الشهر (أو المدة المحددة)"],
+                hotel["العشر الأوائل"],
+                hotel["العشر الوسطى"],
+                hotel["العشر الأواخر"]
+            ];
+            
+            cells.forEach(cellData => {
+                const cell = row.insertCell();
+                cell.textContent = cellData === "-" ? "غير متاح" : cellData;
+            });
+        });
+        
+        // تحويل الجدول إلى ملف Excel
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.table_to_sheet(table);
+        XLSX.utils.book_append_sheet(wb, ws, "عروض رمضان 2026");
+        
+        // حفظ الملف
+        XLSX.writeFile(wb, `عروض_فنادق_رمضان_2026_${new Date().toISOString().split('T')[0]}.xlsx`);
+    }
+    
+    // تصدير البيانات إلى PDF
+    function exportToPDF() {
+        alert('ميزة تصدير PDF تحتاج إلى إعداد إضافي. سيتم إضافة هذه الميزة قريباً.');
+        // يمكن إضافة مكتبة jsPDF لتنفيذ هذه الميزة
+    }
+    
+    // إضافة Listeners للأحداث
+    searchInput.addEventListener('input', updateDisplay);
+    periodFilter.addEventListener('change', updateDisplay);
+    sortSelect.addEventListener('change', updateDisplay);
+    exportExcelBtn.addEventListener('click', exportToExcel);
+    exportPdfBtn.addEventListener('click', exportToPDF);
+    
+    // تحميل البيانات عند فتح الصفحة
+    loadHotelsData();
+    
+    // إضافة دعم لمكتبة Excel للتصدير
+    const script = document.createElement('script');
+    script.src = 'https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js';
+    script.onload = function() {
+        console.log('Loaded SheetJS library for Excel export');
+    };
+    document.head.appendChild(script);
+});
+</script>
+</body>
+</html>
