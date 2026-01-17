@@ -129,7 +129,7 @@
             align-items: center;
         }
 
-        #period-filter, #sort-select {
+        #sort-select {
             padding: 10px 20px;
             border: 2px solid #cbd5e1;
             border-radius: 50px;
@@ -140,32 +140,10 @@
             min-width: 200px;
         }
 
-        #period-filter:focus, #sort-select:focus {
+        #sort-select:focus {
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.2);
             outline: none;
-        }
-
-        .stats {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-top: 15px;
-            font-weight: 600;
-            color: var(--dark-color);
-            background-color: rgba(248, 250, 252, 0.7);
-            padding: 10px;
-            border-radius: 8px;
-        }
-
-        .stats span {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .stats span i {
-            color: var(--primary-color);
         }
 
         .loading {
@@ -198,11 +176,72 @@
             font-weight: 500;
         }
 
+        .error-container {
+            text-align: center;
+            padding: 40px 20px;
+            background-color: rgba(239, 68, 68, 0.05);
+            border-radius: var(--border-radius);
+            margin: 20px 0;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .error-container i {
+            font-size: 3rem;
+            color: var(--danger-color);
+        }
+
+        .error-container h3 {
+            color: var(--danger-color);
+            font-size: 1.5rem;
+            margin: 15px 0;
+        }
+
+        .error-container p {
+            color: #64748b;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .script-error {
+            background-color: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin: 20px 0;
+            direction: ltr;
+            text-align: left;
+            font-family: monospace;
+            overflow-x: auto;
+        }
+
+        .fix-btn {
+            background: linear-gradient(120deg, var(--accent-color), #d97706);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .fix-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
         .table-container {
             overflow-x: auto;
             margin-bottom: 30px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             border-radius: var(--border-radius);
+            display: none; /* مخفية حتى يتم تحميل البيانات */
         }
 
         #hotels-table {
@@ -271,11 +310,6 @@
         .not-available {
             color: var(--danger-color);
             font-style: italic;
-            text-decoration: line-through;
-        }
-
-        .special {
-            background-color: rgba(16, 185, 129, 0.1);
         }
 
         .number-badge {
@@ -291,43 +325,6 @@
             margin: 0 auto;
         }
 
-        .export-section {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin: 30px 0;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 12px 25px;
-            background: linear-gradient(120deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            border: none;
-            border-radius: 50px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
-        }
-
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        .btn i {
-            font-size: 1.1rem;
-        }
-
         footer {
             text-align: center;
             padding: 25px 15px;
@@ -337,14 +334,25 @@
             margin-top: 20px;
         }
 
-        .responsive-info {
-            text-align: center;
-            padding: 15px;
-            color: #64748b;
-            font-style: italic;
-            background-color: #f8fafc;
-            border-radius: var(--border-radius);
-            margin: 20px 0;
+        .retry-btn {
+            background: linear-gradient(120deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .retry-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
         @media (max-width: 768px) {
@@ -362,7 +370,7 @@
                 align-items: stretch;
             }
             
-            #period-filter, #sort-select {
+            #sort-select {
                 width: 100%;
                 min-width: auto;
             }
@@ -373,17 +381,6 @@
             
             .logo i {
                 font-size: 2rem;
-            }
-            
-            .export-section {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .btn {
-                width: 100%;
-                max-width: 300px;
-                justify-content: center;
             }
         }
 
@@ -431,14 +428,6 @@
                 </div>
                 
                 <div class="filters">
-                    <select id="period-filter">
-                        <option value="all">جميع الفترات</option>
-                        <option value="full">كامل الشهر</option>
-                        <option value="first">العشر الأوائل</option>
-                        <option value="middle">العشر الوسطى</option>
-                        <option value="last">العشر الأواخر</option>
-                    </select>
-                    
                     <select id="sort-select">
                         <option value="default">ترتيب حسب</option>
                         <option value="name-asc">الاسم (أ-ي)</option>
@@ -448,19 +437,24 @@
                     </select>
                 </div>
             </div>
-            
-            <div class="stats">
-                <span>إجمالي الفنادق: <span id="total-hotels">0</span></span>
-                <span>الفنادق الجديدة: <span id="new-hotels">0</span></span>
-            </div>
         </header>
         
         <div class="loading" id="loading">
             <div class="spinner"></div>
-            <p>جاري تحميل عروض الفنادق...</p>
+            <p>جاري تحميل عروض الفنادق من Google Sheets...</p>
         </div>
         
-        <div class="table-container">
+        <div class="error-container" id="error-container" style="display: none;">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h3>فشل في تحميل البيانات</h3>
+            <p id="error-message">تعذر الاتصال بمصدر البيانات. قد يكون الرابط غير صحيح أو هناك مشكلة في الخدمة.</p>
+            <div class="script-error" id="script-error" style="display: none;"></div>
+            <button class="retry-btn" id="retry-btn">
+                <i class="fas fa-redo"></i> إعادة المحاولة
+            </button>
+        </div>
+        
+        <div class="table-container" id="table-container">
             <table id="hotels-table">
                 <thead>
                     <tr>
@@ -474,91 +468,198 @@
                     </tr>
                 </thead>
                 <tbody id="table-body">
-                    <!-- سيتم ملء البيانات هنا تلقائياً -->
+                    <!-- سيتم ملء البيانات هنا من Google Script -->
                 </tbody>
             </table>
         </div>
         
-        <div class="export-section">
-            <button id="export-excel" class="btn"><i class="fas fa-file-excel"></i> تصدير إلى Excel</button>
-            <button id="export-pdf" class="btn" disabled><i class="fas fa-file-pdf"></i> تصدير إلى PDF</button>
-        </div>
-        
         <footer>
             <p>&copy; 2026 جميع الحقوق محفوظة - عروض فنادق رمضان</p>
-            <p>البيانات يتم تحديثها تلقائياً من Google Sheets</p>
+            <p>البيانات مأخوذة مباشرة من Google Sheets</p>
         </footer>
     </div>
     
-    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // استبدل هذا الرابط بمعرف النشر الفعلي من Google Script
-        // هذا رابط تجريبي - استبدلها برابط النشر الفعلي الخاص بك
         const API_URL = 'https://script.google.com/macros/s/AKfycbyjrm0ppXjTN6lyGIouBvbAKWSBctDK5elr4rPWb2SxTg0YQB3rmtSBXqDZ2ocJ85db0g/exec';
         
         const tableBody = document.getElementById('table-body');
         const loadingElement = document.getElementById('loading');
+        const errorContainer = document.getElementById('error-container');
+        const errorMessageElement = document.getElementById('error-message');
+        const scriptErrorElement = document.getElementById('script-error');
+        const tableContainer = document.getElementById('table-container');
+        const retryBtn = document.getElementById('retry-btn');
         const searchInput = document.getElementById('search-input');
-        const periodFilter = document.getElementById('period-filter');
         const sortSelect = document.getElementById('sort-select');
-        const totalHotelsElement = document.getElementById('total-hotels');
-        const newHotelsElement = document.getElementById('new-hotels');
-        const exportExcelBtn = document.getElementById('export-excel');
-        const exportPdfBtn = document.getElementById('export-pdf');
         
-        let hotelsData = [];
+        // تحميل البيانات عند التحميل الأولي
+        loadHotelsData();
         
-        // دالة تحميل البيانات من جوجل شيت
+        // دالة تحميل البيانات
         async function loadHotelsData() {
             try {
                 loadingElement.style.display = 'flex';
-                tableBody.innerHTML = '';
+                errorContainer.style.display = 'none';
+                tableContainer.style.display = 'none';
+                scriptErrorElement.style.display = 'none';
                 
-                const response = await fetch(API_URL);
+                // استخدام proxy للتغلب على مشكلة CORS
+                const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(API_URL)}`;
+                
+                const response = await fetch(proxyUrl, {
+                    mode: 'cors',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
                 if (!response.ok) {
-                    throw new Error(`فشل في تحميل البيانات: ${response.status}`);
+                    // محاولة قراءة النص حتى لو كان الخطأ HTML
+                    const text = await response.text();
+                    
+                    // التحقق إذا كان الرد يحتوي على خطأ Google Apps Script
+                    if (text.includes('Google Apps Script') && text.includes('TypeError')) {
+                        throw new Error('خطأ في Google Apps Script - يرجى تحديث الكود');
+                    }
+                    
+                    throw new Error(`فشل في الطلب: ${response.status} ${response.statusText}`);
                 }
                 
-                hotelsData = await response.json();
-                displayStatistics();
-                displayHotels(hotelsData);
+                const text = await response.text();
+                let data;
+                
+                try {
+                    data = JSON.parse(text);
+                    
+                    // التحقق من هيكل البيانات
+                    if (data.success && Array.isArray(data.data)) {
+                        displayHotels(data.data);
+                    } else if (Array.isArray(data)) {
+                        displayHotels(data);
+                    } else {
+                        throw new Error('هيكل البيانات غير صحيح');
+                    }
+                    
+                } catch (e) {
+                    // إذا لم يكن JSON صالحاً، تحقق إذا كان HTML خطأ
+                    if (text.includes('<html') || text.includes('<!DOCTYPE html>')) {
+                        throw new Error('تم استقبال صفحة خطأ من Google Apps Script');
+                    }
+                    throw new Error('البيانات المستلمة ليست بتنسيق JSON صحيح');
+                }
+                
             } catch (error) {
                 console.error('خطأ:', error);
-                tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="7" style="color: var(--danger-color); text-align: center; padding: 30px; font-size: 1.2rem;">
-                            <i class="fas fa-exclamation-triangle"></i> حدث خطأ أثناء تحميل البيانات. يرجى المحاولة لاحقاً.<br>
-                            <small>الرسالة: ${error.message}</small>
-                        </td>
-                    </tr>
-                `;
+                handleScriptError(error, text);
             } finally {
                 loadingElement.style.display = 'none';
             }
         }
         
-        // دالة عرض الإحصائيات
-        function displayStatistics() {
-            totalHotelsElement.textContent = hotelsData.length;
+        // معالجة أخطاء Google Apps Script
+        function handleScriptError(error, responseText) {
+            errorContainer.style.display = 'block';
+            tableContainer.style.display = 'none';
             
-            const newHotelsCount = hotelsData.filter(hotel => 
-                hotel["مميز"] && (hotel["مميز"].includes("جديد") || hotel["مميز"].includes("new"))
-            ).length;
-            
-            newHotelsElement.textContent = newHotelsCount;
+            if (responseText && (responseText.includes('<html') || responseText.includes('<!DOCTYPE html>'))) {
+                // استخراج رسالة الخطأ من HTML
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(responseText, 'text/html');
+                const errorDiv = doc.querySelector('div[style*="text-align:center"]');
+                
+                if (errorDiv) {
+                    errorMessageElement.textContent = 'خطأ في Google Apps Script:';
+                    scriptErrorElement.innerHTML = `<strong>الرسالة:</strong> ${errorDiv.textContent.trim()}`;
+                    scriptErrorElement.style.display = 'block';
+                } else {
+                    errorMessageElement.textContent = 'تم استقبال صفحة خطأ من Google Apps Script';
+                }
+            } else if (error.message.includes('Google Apps Script')) {
+                errorMessageElement.textContent = 'خطأ في Google Apps Script - يرجى تحديث الكود';
+                scriptErrorElement.innerHTML = `
+                    <p><strong>الحل:</strong> يجب تحديث كود Google Apps Script ليتوافق مع واجهة برمجة التطبيقات الصحيحة.</p>
+                    <p><strong>الخطأ الشائع:</strong> استخدام الدالة .setHeaders() التي لم تعد متوفرة في الإصدارات الحديثة.</p>
+                    <button class="fix-btn" onclick="showFixedCode()">
+                        <i class="fas fa-code"></i> عرض الكود الصحيح
+                    </button>
+                `;
+                scriptErrorElement.style.display = 'block';
+            } else {
+                errorMessageElement.textContent = error.message || 'فشل في تحميل البيانات';
+            }
         }
         
-        // دالة عرض الفنادق في الجدول
+        // عرض الكود الصحيح
+        function showFixedCode() {
+            scriptErrorElement.innerHTML = `
+                <p style="margin-bottom: 15px;"><strong>كود Google Apps Script الصحيح:</strong></p>
+                <pre style="background-color: #1e293b; color: #f8fafc; padding: 20px; border-radius: 8px; overflow-x: auto; direction: ltr; text-align: left; font-family: 'Courier New', monospace; font-size: 14px;">
+function doGet(request) {
+  var sheetName = "ورقة1";
+  
+  try {
+    var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = spreadsheet.getSheetByName(sheetName);
+    var data = sheet.getDataRange().getValues();
+    var headers = data[0];
+    var jsonData = [];
+    
+    for (var i = 1; i < data.length; i++) {
+      var row = data[i];
+      if (!row[1] || row[1].toString().trim() === "") continue;
+      
+      var obj = {};
+      for (var j = 0; j < headers.length && j < row.length; j++) {
+        var header = headers[j].toString().trim();
+        var value = row[j] ? row[j].toString().trim() : "-";
+        value = value.replace(/\\n/g, ' ').replace(/\\r/g, ' ').replace(/\\s+/g, ' ');
+        obj[header] = value;
+      }
+      jsonData.push(obj);
+    }
+    
+    var output = ContentService.createTextOutput();
+    output.setContent(JSON.stringify({
+      success: true,
+      timestamp: new Date(),
+      count: jsonData.length,
+      data: jsonData
+    }));
+    output.setMimeType(ContentService.MimeType.JSON);
+    
+    return output;
+    
+  } catch (error) {
+    var output = ContentService.createTextOutput();
+    output.setContent(JSON.stringify({
+      success: false,
+      error: error.toString(),
+      timestamp: new Date(),
+      message: "فشل في تحميل البيانات من جوجل شيت"
+    }));
+    output.setMimeType(ContentService.MimeType.JSON);
+    
+    return output;
+  }
+}</pre>
+                <p style="margin-top: 15px; color: #fbbf24;">
+                    <i class="fas fa-info-circle"></i> <strong>ملاحظة:</strong> يجب نسخ هذا الكود واستبداله في Google Apps Script ثم إعادة النشر
+                </p>
+            `;
+        }
+        
+        // دالة عرض البيانات
         function displayHotels(hotels) {
             if (hotels.length === 0) {
                 tableBody.innerHTML = `
                     <tr>
                         <td colspan="7" style="text-align: center; padding: 30px; font-size: 1.2rem;">
-                            <i class="fas fa-search"></i> لم يتم العثور على فنادق مطابقة
+                            <i class="fas fa-search"></i> لم يتم العثور على فنادق
                         </td>
                     </tr>
                 `;
+                tableContainer.style.display = 'block';
                 return;
             }
             
@@ -586,21 +687,20 @@
                     </tr>
                 `;
             }).join('');
+            
+            tableContainer.style.display = 'block';
         }
         
-        // دالة لتنسيق الأسعار
+        // دوال مساعدة
         function formatPrice(price) {
             if (!price || price === "غير متاح" || price === "-" || price.trim() === "-") {
                 return "غير متاح";
             }
             
-            // تنظيف القيمة من أي رموز غير ضرورية
             let cleanedPrice = price.toString().replace(/[^\d.,]/g, '');
             if (cleanedPrice === '') return price;
             
-            // استبدال الفاصلة العربية بنقطة عشرية
             cleanedPrice = cleanedPrice.replace(/,/g, '');
-            
             const num = parseFloat(cleanedPrice);
             if (isNaN(num)) {
                 return price;
@@ -609,201 +709,26 @@
             return `${num.toLocaleString('ar-EG')} ريال`;
         }
         
-        // دالة لتحديد كلاس السعر
         function getPriceClass(price) {
             if (!price || price === "غير متاح" || price === "-" || price.trim() === "-") {
                 return 'not-available';
             }
-            
             return 'price';
         }
         
-        // دالة الفلترة حسب فترة الإقامة
-        function filterByPeriod(hotels) {
-            const period = periodFilter.value;
-            
-            if (period === 'all') return hotels;
-            
-            return hotels.filter(hotel => {
-                switch(period) {
-                    case 'full':
-                        return hotel["كامل الشهر (أو المدة المحددة)"] && 
-                               hotel["كامل الشهر (أو المدة المحددة)"] !== "-" && 
-                               hotel["كامل الشهر (أو المدة المحددة)"].trim() !== "-";
-                    case 'first':
-                        return hotel["العشر الأوائل"] && 
-                               hotel["العشر الأوائل"] !== "-" && 
-                               hotel["العشر الأوائل"].trim() !== "-";
-                    case 'middle':
-                        return hotel["العشر الوسطى"] && 
-                               hotel["العشر الوسطى"] !== "-" && 
-                               hotel["العشر الوسطى"].trim() !== "-";
-                    case 'last':
-                        return hotel["العشر الأواخر"] && 
-                               hotel["العشر الأواخر"] !== "-" && 
-                               hotel["العشر الأواخر"].trim() !== "-";
-                    default:
-                        return true;
-                }
-            });
-        }
-        
-        // دالة البحث في الفنادق
-        function searchHotels(hotels) {
+        // دوال البحث والفرز
+        function filterHotels() {
             const searchTerm = searchInput.value.toLowerCase().trim();
-            if (!searchTerm) return hotels;
-            
-            return hotels.filter(hotel => 
-                (hotel["اسم الفندق"] && hotel["اسم الفندق"].toLowerCase().includes(searchTerm)) || 
-                (hotel["تفاصيل الغرفة/الفترة"] && hotel["تفاصيل الغرفة/الفترة"].toLowerCase().includes(searchTerm))
-            );
-        }
-        
-        // دالة الفرز
-        function sortHotels(hotels) {
             const sortBy = sortSelect.value;
             
-            return [...hotels].sort((a, b) => {
-                switch(sortBy) {
-                    case 'name-asc':
-                        return (a["اسم الفندق"] || '').localeCompare(b["اسم الفندق"] || '', 'ar');
-                    case 'name-desc':
-                        return (b["اسم الفندق"] || '').localeCompare(a["اسم الفندق"] || '', 'ar');
-                    case 'price-low':
-                        return extractNumericPrice(a) - extractNumericPrice(b);
-                    case 'price-high':
-                        return extractNumericPrice(b) - extractNumericPrice(a);
-                    default:
-                        return 0;
-                }
-            });
+            // إعادة تحميل البيانات وتطبيق الفلاتر
+            loadHotelsData();
         }
         
-        // استخراج أقل سعر متاح للفندق
-        function extractNumericPrice(hotel) {
-            // أولوية للسعر الكامل للشهر
-            let price = hotel["كامل الشهر (أو المدة المحددة)"];
-            
-            // إذا كان غير متاح، نحاول الحصول على أقل سعر من الفترات الأخرى
-            if (!price || price === "-" || price.trim() === "-") {
-                const prices = [
-                    hotel["العشر الأوائل"],
-                    hotel["العشر الوسطى"],
-                    hotel["العشر الأواخر"]
-                ].filter(p => p && p !== "-" && p.trim() !== "-")
-                 .map(p => {
-                     const cleaned = p.toString().replace(/[^\d.,]/g, '').replace(/,/g, '');
-                     return parseFloat(cleaned);
-                 })
-                 .filter(num => !isNaN(num));
-                
-                return prices.length > 0 ? Math.min(...prices) : Infinity;
-            }
-            
-            const cleaned = price.toString().replace(/[^\d.,]/g, '').replace(/,/g, '');
-            const num = parseFloat(cleaned);
-            return isNaN(num) ? Infinity : num;
-        }
-        
-        // تحديث العرض بناءً على الفلاتر
-        function updateDisplay() {
-            let filteredHotels = [...hotelsData];
-            
-            // تطبيق الفلاتر بالتتابع
-            filteredHotels = searchHotels(filteredHotels);
-            filteredHotels = filterByPeriod(filteredHotels);
-            filteredHotels = sortHotels(filteredHotels);
-            
-            displayHotels(filteredHotels);
-        }
-        
-        // تصدير البيانات إلى Excel
-        function exportToExcel() {
-            if (hotelsData.length === 0) {
-                alert('لا توجد بيانات للتصدير');
-                return;
-            }
-            
-            // إنشاء مصفوفة للبيانات
-            const data = hotelsData.map(hotel => ({
-                "مميز": hotel["مميز"] || "",
-                "اسم الفندق": hotel["اسم الفندق"] || "",
-                "تفاصيل الغرفة/الفترة": hotel["تفاصيل الغرفة/الفترة"] || "",
-                "كامل الشهر": hotel["كامل الشهر (أو المدة المحددة)"] || "",
-                "العشر الأوائل": hotel["العشر الأوائل"] || "",
-                "العشر الوسطى": hotel["العشر الوسطى"] || "",
-                "العشر الأواخر": hotel["العشر الأواخر"] || ""
-            }));
-            
-            // تحويل البيانات إلى ورقة عمل
-            const ws = XLSX.utils.json_to_sheet(data);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "عروض رمضان 2026");
-            
-            // حفظ الملف
-            XLSX.writeFile(wb, `عروض_فنادق_رمضان_2026_${new Date().toISOString().split('T')[0]}.xlsx`);
-        }
-        
-        // تصدير البيانات إلى PDF
-        function exportToPDF() {
-            alert('ميزة تصدير PDF تحتاج إلى إعداد إضافي. سيتم إضافة هذه الميزة قريباً.');
-        }
-        
-        // إضافة Listeners للأحداث
-        searchInput.addEventListener('input', updateDisplay);
-        periodFilter.addEventListener('change', updateDisplay);
-        sortSelect.addEventListener('change', updateDisplay);
-        exportExcelBtn.addEventListener('click', exportToExcel);
-        exportPdfBtn.addEventListener('click', exportToPDF);
-        
-        // تحميل البيانات عند فتح الصفحة
-        loadHotelsData();
-        
-        // لعرض البيانات التجريبية عند عدم توفر الاتصال
-        function showSampleData() {
-            hotelsData = [
-                {
-                    "مميز": "1",
-                    "اسم الفندق": "فندق الهدى",
-                    "تفاصيل الغرفة/الفترة": "غرفة مفردة",
-                    "كامل الشهر (أو المدة المحددة)": "4500",
-                    "العشر الأوائل": "1800",
-                    "العشر الوسطى": "1500",
-                    "العشر الأواخر": "1200"
-                },
-                {
-                    "مميز": "جديد",
-                    "اسم الفندق": "فندق رؤى مكة",
-                    "تفاصيل الغرفة/الفترة": "غرفة مزدوجة",
-                    "كامل الشهر (أو المدة المحددة)": "7500",
-                    "العشر الأوائل": "3000",
-                    "العشر الوسطى": "2500",
-                    "العشر الأواخر": "2000"
-                },
-                {
-                    "مميز": "2",
-                    "اسم الفندق": "فندق الإيمان",
-                    "تفاصيل الغرفة/الفترة": "جناح عائلي",
-                    "كامل الشهر (أو المدة المحددة)": "-",
-                    "العشر الأوائل": "5500",
-                    "العشر الوسطى": "4500",
-                    "العشر الأواخر": "3500"
-                }
-            ];
-            
-            displayStatistics();
-            displayHotels(hotelsData);
-            loadingElement.style.display = 'none';
-            console.log('تم عرض البيانات التجريبية');
-        }
-        
-        // محاولة إعادة التحميل عند فشل التحميل الأولي
-        setTimeout(() => {
-            if (hotelsData.length === 0 && tableBody.innerHTML === '') {
-                console.log('لم يتم تحميل البيانات، سيتم عرض بيانات تجريبية');
-                showSampleData();
-            }
-        }, 10000);
+        // Listeners
+        searchInput.addEventListener('input', filterHotels);
+        sortSelect.addEventListener('change', filterHotels);
+        retryBtn.addEventListener('click', loadHotelsData);
     });
     </script>
 </body>
