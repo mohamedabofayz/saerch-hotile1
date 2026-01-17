@@ -1420,19 +1420,741 @@ function renderOperators(list){
             </div>
         </div>
         <div class="app-content-full">
-            <!-- 
-            🚨 🚨 🚨 مكان لصق كود HTML الكامل لصفحة عروض رمضان 🚨 🚨 🚨
-            احذف المحتوى التجريبي وضع كودك الكامل هنا
-            -->
-            <div class="demo-content">
+           <!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عروض فنادق رمضان 1447هـ / 2026م</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1e3a8a;
+            --secondary-color: #0ea5e9;
+            --accent-color: #f59e0b;
+            --light-color: #f8fafc;
+            --dark-color: #0f172a;
+            --success-color: #10b981;
+            --warning-color: #fbbf24;
+            --danger-color: #ef4444;
+            --border-radius: 12px;
+            --box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 15px 0;
+            border-bottom: 3px solid var(--primary-color);
+            background: linear-gradient(120deg, rgba(30, 58, 138, 0.05), rgba(14, 165, 233, 0.05));
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .logo i {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+        }
+
+        .logo h1 {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: var(--secondary-color);
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .filter-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: rgba(30, 58, 138, 0.05);
+            border-radius: var(--border-radius);
+        }
+
+        .search-box {
+            position: relative;
+            width: 300px;
+            min-width: 250px;
+        }
+
+        .search-box i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+
+        #search-input {
+            width: 100%;
+            padding: 12px 45px 12px 15px;
+            border: 2px solid #cbd5e1;
+            border-radius: 50px;
+            font-size: 16px;
+            font-family: 'Cairo', sans-serif;
+            transition: var(--transition);
+        }
+
+        #search-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.2);
+            outline: none;
+        }
+
+        .filters {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        #sort-select {
+            padding: 10px 20px;
+            border: 2px solid #cbd5e1;
+            border-radius: 50px;
+            font-size: 16px;
+            font-family: 'Cairo', sans-serif;
+            background-color: white;
+            transition: var(--transition);
+            min-width: 200px;
+        }
+
+        #sort-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.2);
+            outline: none;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(30, 58, 138, 0.2);
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading p {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .error-container {
+            text-align: center;
+            padding: 40px 20px;
+            background-color: rgba(239, 68, 68, 0.05);
+            border-radius: var(--border-radius);
+            margin: 20px 0;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .error-container i {
+            font-size: 3rem;
+            color: var(--danger-color);
+        }
+
+        .error-container h3 {
+            color: var(--danger-color);
+            font-size: 1.5rem;
+            margin: 15px 0;
+        }
+
+        .error-container p {
+            color: #64748b;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .script-error {
+            background-color: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin: 20px 0;
+            direction: ltr;
+            text-align: left;
+            font-family: monospace;
+            overflow-x: auto;
+        }
+
+        .fix-btn {
+            background: linear-gradient(120deg, var(--accent-color), #d97706);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .fix-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-radius: var(--border-radius);
+            display: none; /* مخفية حتى يتم تحميل البيانات */
+        }
+
+        #hotels-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 900px;
+            font-size: 0.95rem;
+            table-layout: auto;
+        }
+
+        #hotels-table th {
+            background: linear-gradient(120deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            text-align: center;
+            padding: 16px 12px;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        #hotels-table td {
+            padding: 14px 12px;
+            text-align: center;
+            border-bottom: 1px solid #e2e8f0;
+            transition: var(--transition);
+        }
+
+        #hotels-table tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        #hotels-table tr:hover {
+            background-color: #dbeafe;
+            transform: translateY(-1px);
+        }
+
+        .new-hotel {
+            position: relative;
+            background-color: rgba(245, 158, 11, 0.08) !important;
+        }
+
+        .new-hotel::after {
+            content: "جديد";
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            background-color: var(--accent-color);
+            color: white;
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 15px;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transform: rotate(-15deg);
+        }
+
+        .price {
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 1.05rem;
+        }
+
+        .not-available {
+            color: var(--danger-color);
+            font-style: italic;
+        }
+
+        .number-badge {
+            display: inline-block;
+            width: 26px;
+            height: 26px;
+            background-color: #94a3b8;
+            color: white;
+            border-radius: 50%;
+            font-size: 0.85rem;
+            font-weight: 600;
+            line-height: 26px;
+            margin: 0 auto;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px 15px;
+            color: #64748b;
+            border-top: 1px solid #e2e8f0;
+            font-size: 0.95rem;
+            margin-top: 20px;
+        }
+
+        .retry-btn {
+            background: linear-gradient(120deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .retry-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        @media (max-width: 768px) {
+            .filter-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+            
+            .filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            #sort-select {
+                width: 100%;
+                min-width: auto;
+            }
+            
+            .logo h1 {
+                font-size: 2rem;
+            }
+            
+            .logo i {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo h1 {
+                font-size: 1.7rem;
+            }
+            
+            .subtitle {
+                font-size: 1.1rem;
+            }
+            
+            #hotels-table th, #hotels-table td {
+                padding: 10px 8px;
+                font-size: 0.85rem;
+            }
+            
+            .number-badge {
+                width: 22px;
+                height: 22px;
+                line-height: 22px;
+                font-size: 0.75rem;
+            }
+            
+            .new-hotel::after {
+                font-size: 0.65rem;
+                padding: 2px 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
                 <i class="fas fa-moon"></i>
-                <h2>عروض رمضان</h2>
-                <p>هذا هو مكان كود HTML الكامل لصفحة عروض رمضان. يمكنك استبدال هذا المحتوى بكودك الخاص.</p>
-                <p>الصفحة تعمل بسلاسة مع جميع أنواع المحتوى في وضع ملء الشاشة.</p>
-                <button class="demo-btn" onclick="alert('تم اختيار العرض بنجاح!')">
-                    <i class="fas fa-shopping-cart"></i> اطلب الآن
-                </button>
+                <h1>عروض فنادق رمضان 1447هـ / 2026م</h1>
             </div>
+            <p class="subtitle">مكة المكرمة</p>
+            
+            <div class="filter-section">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-input" placeholder="ابحث عن فندق..." aria-label="بحث عن فندق">
+                </div>
+                
+                <div class="filters">
+                    <select id="sort-select">
+                        <option value="default">ترتيب حسب</option>
+                        <option value="name-asc">الاسم (أ-ي)</option>
+                        <option value="name-desc">الاسم (ي-أ)</option>
+                        <option value="price-low">السعر (من الأقل)</option>
+                        <option value="price-high">السعر (من الأعلى)</option>
+                    </select>
+                </div>
+            </div>
+        </header>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>جاري تحميل عروض الفنادق من Google Sheets...</p>
+        </div>
+        
+        <div class="error-container" id="error-container" style="display: none;">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h3>فشل في تحميل البيانات</h3>
+            <p id="error-message">تعذر الاتصال بمصدر البيانات. قد يكون الرابط غير صحيح أو هناك مشكلة في الخدمة.</p>
+            <div class="script-error" id="script-error" style="display: none;"></div>
+            <button class="retry-btn" id="retry-btn">
+                <i class="fas fa-redo"></i> إعادة المحاولة
+            </button>
+        </div>
+        
+        <div class="table-container" id="table-container">
+            <table id="hotels-table">
+                <thead>
+                    <tr>
+                        <th>مميز</th>
+                        <th>اسم الفندق</th>
+                        <th>تفاصيل الغرفة/الفترة</th>
+                        <th>كامل الشهر</th>
+                        <th>العشر الأوائل</th>
+                        <th>العشر الوسطى</th>
+                        <th>العشر الأواخر</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <!-- سيتم ملء البيانات هنا من Google Script -->
+                </tbody>
+            </table>
+        </div>
+        
+        <footer>
+            <p>&copy; 2026 جميع الحقوق محفوظة - عروض فنادق رمضان</p>
+        
+        </footer>
+    </div>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const API_URL = 'https://script.google.com/macros/s/AKfycbyjrm0ppXjTN6lyGIouBvbAKWSBctDK5elr4rPWb2SxTg0YQB3rmtSBXqDZ2ocJ85db0g/exec';
+        
+        const tableBody = document.getElementById('table-body');
+        const loadingElement = document.getElementById('loading');
+        const errorContainer = document.getElementById('error-container');
+        const errorMessageElement = document.getElementById('error-message');
+        const scriptErrorElement = document.getElementById('script-error');
+        const tableContainer = document.getElementById('table-container');
+        const retryBtn = document.getElementById('retry-btn');
+        const searchInput = document.getElementById('search-input');
+        const sortSelect = document.getElementById('sort-select');
+        
+        // تحميل البيانات عند التحميل الأولي
+        loadHotelsData();
+        
+        // دالة تحميل البيانات
+        async function loadHotelsData() {
+            try {
+                loadingElement.style.display = 'flex';
+                errorContainer.style.display = 'none';
+                tableContainer.style.display = 'none';
+                scriptErrorElement.style.display = 'none';
+                
+                // استخدام proxy للتغلب على مشكلة CORS
+                const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(API_URL)}`;
+                
+                const response = await fetch(proxyUrl, {
+                    mode: 'cors',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    // محاولة قراءة النص حتى لو كان الخطأ HTML
+                    const text = await response.text();
+                    
+                    // التحقق إذا كان الرد يحتوي على خطأ Google Apps Script
+                    if (text.includes('Google Apps Script') && text.includes('TypeError')) {
+                        throw new Error('خطأ في Google Apps Script - يرجى تحديث الكود');
+                    }
+                    
+                    throw new Error(`فشل في الطلب: ${response.status} ${response.statusText}`);
+                }
+                
+                const text = await response.text();
+                let data;
+                
+                try {
+                    data = JSON.parse(text);
+                    
+                    // التحقق من هيكل البيانات
+                    if (data.success && Array.isArray(data.data)) {
+                        displayHotels(data.data);
+                    } else if (Array.isArray(data)) {
+                        displayHotels(data);
+                    } else {
+                        throw new Error('هيكل البيانات غير صحيح');
+                    }
+                    
+                } catch (e) {
+                    // إذا لم يكن JSON صالحاً، تحقق إذا كان HTML خطأ
+                    if (text.includes('<html') || text.includes('<!DOCTYPE html>')) {
+                        throw new Error('تم استقبال صفحة خطأ من Google Apps Script');
+                    }
+                    throw new Error('البيانات المستلمة ليست بتنسيق JSON صحيح');
+                }
+                
+            } catch (error) {
+                console.error('خطأ:', error);
+                handleScriptError(error, text);
+            } finally {
+                loadingElement.style.display = 'none';
+            }
+        }
+        
+        // معالجة أخطاء Google Apps Script
+        function handleScriptError(error, responseText) {
+            errorContainer.style.display = 'block';
+            tableContainer.style.display = 'none';
+            
+            if (responseText && (responseText.includes('<html') || responseText.includes('<!DOCTYPE html>'))) {
+                // استخراج رسالة الخطأ من HTML
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(responseText, 'text/html');
+                const errorDiv = doc.querySelector('div[style*="text-align:center"]');
+                
+                if (errorDiv) {
+                    errorMessageElement.textContent = 'خطأ في Google Apps Script:';
+                    scriptErrorElement.innerHTML = `<strong>الرسالة:</strong> ${errorDiv.textContent.trim()}`;
+                    scriptErrorElement.style.display = 'block';
+                } else {
+                    errorMessageElement.textContent = 'تم استقبال صفحة خطأ من Google Apps Script';
+                }
+            } else if (error.message.includes('Google Apps Script')) {
+                errorMessageElement.textContent = 'خطأ في Google Apps Script - يرجى تحديث الكود';
+                scriptErrorElement.innerHTML = `
+                    <p><strong>الحل:</strong> يجب تحديث كود Google Apps Script ليتوافق مع واجهة برمجة التطبيقات الصحيحة.</p>
+                    <p><strong>الخطأ الشائع:</strong> استخدام الدالة .setHeaders() التي لم تعد متوفرة في الإصدارات الحديثة.</p>
+                    <button class="fix-btn" onclick="showFixedCode()">
+                        <i class="fas fa-code"></i> عرض الكود الصحيح
+                    </button>
+                `;
+                scriptErrorElement.style.display = 'block';
+            } else {
+                errorMessageElement.textContent = error.message || 'فشل في تحميل البيانات';
+            }
+        }
+        
+        // عرض الكود الصحيح
+        function showFixedCode() {
+            scriptErrorElement.innerHTML = `
+                <p style="margin-bottom: 15px;"><strong>كود Google Apps Script الصحيح:</strong></p>
+                <pre style="background-color: #1e293b; color: #f8fafc; padding: 20px; border-radius: 8px; overflow-x: auto; direction: ltr; text-align: left; font-family: 'Courier New', monospace; font-size: 14px;">
+function doGet(request) {
+  var sheetName = "ورقة1";
+  
+  try {
+    var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = spreadsheet.getSheetByName(sheetName);
+    var data = sheet.getDataRange().getValues();
+    var headers = data[0];
+    var jsonData = [];
+    
+    for (var i = 1; i < data.length; i++) {
+      var row = data[i];
+      if (!row[1] || row[1].toString().trim() === "") continue;
+      
+      var obj = {};
+      for (var j = 0; j < headers.length && j < row.length; j++) {
+        var header = headers[j].toString().trim();
+        var value = row[j] ? row[j].toString().trim() : "-";
+        value = value.replace(/\\n/g, ' ').replace(/\\r/g, ' ').replace(/\\s+/g, ' ');
+        obj[header] = value;
+      }
+      jsonData.push(obj);
+    }
+    
+    var output = ContentService.createTextOutput();
+    output.setContent(JSON.stringify({
+      success: true,
+      timestamp: new Date(),
+      count: jsonData.length,
+      data: jsonData
+    }));
+    output.setMimeType(ContentService.MimeType.JSON);
+    
+    return output;
+    
+  } catch (error) {
+    var output = ContentService.createTextOutput();
+    output.setContent(JSON.stringify({
+      success: false,
+      error: error.toString(),
+      timestamp: new Date(),
+      message: "فشل في تحميل البيانات من جوجل شيت"
+    }));
+    output.setMimeType(ContentService.MimeType.JSON);
+    
+    return output;
+  }
+}</pre>
+                <p style="margin-top: 15px; color: #fbbf24;">
+                    <i class="fas fa-info-circle"></i> <strong>ملاحظة:</strong> يجب نسخ هذا الكود واستبداله في Google Apps Script ثم إعادة النشر
+                </p>
+            `;
+        }
+        
+        // دالة عرض البيانات
+        function displayHotels(hotels) {
+            if (hotels.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 30px; font-size: 1.2rem;">
+                            <i class="fas fa-search"></i> لم يتم العثور على فنادق
+                        </td>
+                    </tr>
+                `;
+                tableContainer.style.display = 'block';
+                return;
+            }
+            
+            tableBody.innerHTML = hotels.map(hotel => {
+                const isNewHotel = hotel["مميز"] && (hotel["مميز"].includes("جديد") || hotel["مميز"].includes("new"));
+                const isNumbered = hotel["مميز"] && !isNaN(parseInt(hotel["مميز"])) && hotel["مميز"].trim() !== "";
+                const cssClass = isNewHotel ? 'class="new-hotel"' : '';
+                
+                let badge = '<span>-</span>';
+                if (isNewHotel) {
+                    badge = `<span class="badge" style="color: var(--accent-color); font-weight: bold;"><i class="fas fa-star"></i> جديد</span>`;
+                } else if (isNumbered) {
+                    badge = `<span class="number-badge">${hotel["مميز"]}</span>`;
+                }
+                
+                return `
+                    <tr ${cssClass}>
+                        <td>${badge}</td>
+                        <td><strong>${hotel["اسم الفندق"] || 'غير محدد'}</strong></td>
+                        <td>${hotel["تفاصيل الغرفة/الفترة"] || 'غير محدد'}</td>
+                        <td class="${getPriceClass(hotel["كامل الشهر (أو المدة المحددة)"])}">${formatPrice(hotel["كامل الشهر (أو المدة المحددة)"])}</td>
+                        <td class="${getPriceClass(hotel["العشر الأوائل"])}">${formatPrice(hotel["العشر الأوائل"])}</td>
+                        <td class="${getPriceClass(hotel["العشر الوسطى"])}">${formatPrice(hotel["العشر الوسطى"])}</td>
+                        <td class="${getPriceClass(hotel["العشر الأواخر"])}">${formatPrice(hotel["العشر الأواخر"])}</td>
+                    </tr>
+                `;
+            }).join('');
+            
+            tableContainer.style.display = 'block';
+        }
+        
+        // دوال مساعدة
+        function formatPrice(price) {
+            if (!price || price === "غير متاح" || price === "-" || price.trim() === "-") {
+                return "غير متاح";
+            }
+            
+            let cleanedPrice = price.toString().replace(/[^\d.,]/g, '');
+            if (cleanedPrice === '') return price;
+            
+            cleanedPrice = cleanedPrice.replace(/,/g, '');
+            const num = parseFloat(cleanedPrice);
+            if (isNaN(num)) {
+                return price;
+            }
+            
+            return `${num.toLocaleString('ar-EG')} ريال`;
+        }
+        
+        function getPriceClass(price) {
+            if (!price || price === "غير متاح" || price === "-" || price.trim() === "-") {
+                return 'not-available';
+            }
+            return 'price';
+        }
+        
+        // دوال البحث والفرز
+        function filterHotels() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            const sortBy = sortSelect.value;
+            
+            // إعادة تحميل البيانات وتطبيق الفلاتر
+            loadHotelsData();
+        }
+        
+        // Listeners
+        searchInput.addEventListener('input', filterHotels);
+        sortSelect.addEventListener('change', filterHotels);
+        retryBtn.addEventListener('click', loadHotelsData);
+    });
+    </script>
+</body>
+</html>
         </div>
     </div>
 
