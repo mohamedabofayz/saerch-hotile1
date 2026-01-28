@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0A2E5A">
+    <title>لوحة التحكم الهوستر</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <!-- الشاشة الرئيسية (لوحة الأيقونات) -->
+    <div class="main-dashboard" id="mainDashboard">
+        <!-- منطقة البحث -->
+        <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" id="appSearch" placeholder="ابحث عن تطبيق..." aria-label="بحث عن تطبيق">
+        </div>
+
+        <!-- الترويسة -->
+        <div class="header">
+            <h1><i class="fas fa-th-large"></i> لوحة التحكم</h1>
+            <p>اختر التطبيق الذي تريد العمل عليه من القائمة أدناه</p>
+        </div>
+
+        <!-- شبكة التطبيقات -->
+        <div class="apps-grid">
+            <a href="pages/invoices.html" class="app-tile" data-app="invoices">
+                <div class="app-icon-container">
+                    <i class="fas fa-file-invoice"></i>
+                </div>
+                <span class="app-name">إدارة الفواتير</span>
+            </a>
+            
+            <a href="pages/hotels.html" class="app-tile" data-app="hotels">
+                <div class="app-icon-container" style="background: linear-gradient(135deg, var(--danger), #c0392b);">
+                    <i class="fas fa-hotel"></i>
+                </div>
+                <span class="app-name">بدائل توافر الحجوزات</span>
+            </a>
+            
+            <a href="pages/ramadan.html" class="app-tile" data-app="ramadan">
+                <div class="app-icon-container" style="background: linear-gradient(135deg, #9b59b6, #8e44ad);">
+                    <i class="fas fa-moon"></i>
+                </div>
+                <span class="app-name">عروض رمضان</span>
+            </a>
+            
+            <a href="pages/customers.html" class="app-tile" data-app="customers">
+                <div class="app-icon-container" style="background: linear-gradient(135deg, var(--success), #27ae60);">
+                    <i class="fas fa-users"></i>
+                </div>
+                <span class="app-name">إدارة العملاء</span>
+            </a>
+            
+            <a href="pages/reports.html" class="app-tile" data-app="reports">
+                <div class="app-icon-container" style="background: linear-gradient(135deg, var(--warning), #e67e22);">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <span class="app-name">التقارير</span>
+            </a>
+            
+            <a href="pages/settings.html" class="app-tile" data-app="settings">
+                <div class="app-icon-container" style="background: linear-gradient(135deg, #34495e, #2c3e50);">
+                    <i class="fas fa-cog"></i>
+                </div>
+                <span class="app-name">الإعدادات</span>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // البحث عن التطبيقات
+        document.getElementById('appSearch').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase().trim();
+            document.querySelectorAll('.app-tile').forEach(tile => {
+                const appName = tile.querySelector('.app-name').textContent.toLowerCase();
+                const appId = tile.getAttribute('data-app');
+                
+                if (searchTerm === '' || appName.includes(searchTerm) || appId.includes(searchTerm)) {
+                    tile.style.display = 'block';
+                    tile.style.opacity = '1';
+                } else {
+                    tile.style.display = 'none';
+                    tile.style.opacity = '0.5';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

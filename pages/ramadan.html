@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عروض فنادق رمضان 1447هـ / 2026م</title>
+    <!-- Unifying font to Tajawal -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/variables.css">
+    <link rel="stylesheet" href="../css/app.css">
+    <style>
+        /* Specific overrides for Ramadan App */
+        :root {
+            /* Heatmap localized override if needed, but variables.css has them */
+        }
+
+        body {
+            font-family: var(--font-main);
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            padding: 0;
+            /* app-content-full handles padding */
+        }
+
+        .ramadan-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: var(--bg-card);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            padding: 20px;
+            border: 1px solid white;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 15px 0;
+            border-bottom: 3px solid var(--primary);
+            background: rgba(10, 46, 90, 0.03);
+            border-radius: 16px 16px 0 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .logo .moon-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .logo h1 {
+            color: var(--primary);
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: var(--primary);
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .filter-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .search-box {
+            position: relative;
+            width: 300px;
+            min-width: 250px;
+        }
+
+        .search-box .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        #search-input {
+            width: 100%;
+            padding: 12px 45px 12px 15px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: var(--font-main);
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+
+        #search-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(10, 46, 90, 0.15);
+            outline: none;
+        }
+
+        .filters {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        #sort-select {
+            padding: 10px 20px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: var(--font-main);
+            background-color: white;
+            transition: all 0.3s ease;
+            min-width: 200px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(10, 46, 90, 0.2);
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .error-container {
+            text-align: center;
+            padding: 40px 20px;
+            background-color: rgba(231, 76, 60, 0.05);
+            border-radius: 16px;
+            margin: 20px 0;
+            border: 1px solid rgba(231, 76, 60, 0.2);
+            display: none;
+        }
+
+        .error-container .warning-icon {
+            font-size: 3rem;
+            color: var(--danger);
+        }
+
+        .retry-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(10, 46, 90, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .retry-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border-radius: 16px;
+            display: none;
+        }
+
+        #hotels-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 900px;
+            font-size: 0.95rem;
+        }
+
+        #hotels-table th {
+            background: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 16px 12px;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        #hotels-table td {
+            padding: 14px 12px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        #hotels-table tr:nth-child(even) {
+            background-color: rgba(10, 46, 90, 0.03);
+        }
+
+        #hotels-table tr:hover {
+            background-color: #dbeafe;
+        }
+
+        .new-hotel {
+            background-color: rgba(243, 156, 18, 0.08) !important;
+            position: relative;
+        }
+
+        .price {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.05rem;
+        }
+
+        .not-available {
+            color: var(--danger);
+            font-style: italic;
+        }
+
+        .number-badge {
+            display: inline-block;
+            width: 26px;
+            height: 26px;
+            background-color: var(--text-secondary);
+            color: white;
+            border-radius: 50%;
+            font-size: 0.85rem;
+            font-weight: 600;
+            line-height: 26px;
+            margin: 0 auto;
+        }
+
+        .pagination-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-top: 10px;
+            border-top: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .pagination-info {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .page-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            color: var(--primary);
+            transition: all 0.2s;
+            font-family: var(--font-main);
+        }
+
+        .page-btn:hover:not(:disabled) {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .page-btn.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .page-btn:disabled {
+            background-color: #f1f5f9;
+            color: var(--border);
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 768px) {
+
+            .filter-section,
+            .pagination-container {
+                flex-direction: column;
+            }
+
+            .search-box,
+            #sort-select {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Toolbar -->
+    <div class="app-toolbar">
+        <div class="toolbar-left">
+            <a href="../index.html" class="back-btn">
+                <i class="fas fa-arrow-right"></i>
+            </a>
+            <h2 class="app-title">عروض رمضان</h2>
+        </div>
+        <div class="toolbar-right">
+            <button class="toolbar-btn refresh" onclick="location.reload()">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div class="app-content-full">
+        <div class="ramadan-container">
+            <header>
+                <div class="logo">
+                    <span class="moon-icon">🌙</span>
+                    <h1>عروض فنادق رمضان 1447هـ / 2026م</h1>
+                </div>
+                <p class="subtitle">مكة المكرمة</p>
+
+                <div class="filter-section">
+                    <div class="search-box">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="search-input" placeholder="ابحث باسم الفندق..." aria-label="بحث عن فندق">
+                    </div>
+
+                    <div class="filters">
+                        <select id="sort-select">
+                            <option value="default">الترتيب الافتراضي</option>
+                            <option value="name-asc">الاسم (أ-ي)</option>
+                            <option value="name-desc">الاسم (ي-أ)</option>
+                            <option value="price-low">السعر (من الأقل)</option>
+                            <option value="price-high">السعر (من الأعلى)</option>
+                        </select>
+                    </div>
+                </div>
+            </header>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>جاري تحميل البيانات...</p>
+            </div>
+
+            <div class="error-container" id="error-container">
+                <span class="warning-icon">⚠️</span>
+                <h3>فشل في تحميل البيانات</h3>
+                <p id="error-message">تعذر الاتصال بالخادم.</p>
+                <button class="retry-btn" id="retry-btn">
+                    ↻ إعادة المحاولة
+                </button>
+            </div>
+
+            <div class="table-container" id="table-container">
+                <table id="hotels-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>اسم الفندق</th>
+                            <th>تفاصيل الغرفة/الفترة</th>
+                            <th>كامل الشهر</th>
+                            <th>العشر الأوائل</th>
+                            <th>العشر الوسطى</th>
+                            <th>العشر الأواخر</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination-container" id="pagination-container" style="display: none;">
+                <div class="pagination-info" id="pagination-info">عرض 0-0 من أصل 0</div>
+                <div class="pagination-controls" id="pagination-controls">
+                </div>
+            </div>
+
+            <footer>
+                <p>&copy; 2026 جميع الحقوق محفوظة - عروض فنادق رمضان</p>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const API_URL = 'https://script.google.com/macros/s/AKfycbyjrm0ppXjTN6lyGIouBvbAKWSBctDK5elr4rPWb2SxTg0YQB3rmtSBXqDZ2ocJ85db0g/exec';
+
+            let allHotelsData = [];
+            let filteredHotels = [];
+            let currentPage = 1;
+            const rowsPerPage = 10;
+
+            const tableBody = document.getElementById('table-body');
+            const loadingElement = document.getElementById('loading');
+            const errorContainer = document.getElementById('error-container');
+            const tableContainer = document.getElementById('table-container');
+            const paginationContainer = document.getElementById('pagination-container');
+            const paginationInfo = document.getElementById('pagination-info');
+            const paginationControls = document.getElementById('pagination-controls');
+
+            const searchInput = document.getElementById('search-input');
+            const sortSelect = document.getElementById('sort-select');
+            const retryBtn = document.getElementById('retry-btn');
+
+            // Mock data
+            const mockData = [
+                {
+                    "اسم الفندق": "فندق الحرم",
+                    "تفاصيل الغرفة/الفترة": "غرفة ديلوكس - 30 ليلة",
+                    "سعر كامل الشهر (أو المدة المحددة)": "3,360",
+                    "سعر العشر الأوائل": "1,200",
+                    "سعر العشر الوسطى": "1,100",
+                    "سعر العشر الأواخر": "1,060",
+                    "مميز": "★"
+                },
+                {
+                    "اسم الفندق": "فندق مكة رويال",
+                    "تفاصيل الغرفة/الفترة": "جناح عائلي - 30 ليلة",
+                    "سعر كامل الشهر (أو المدة المحددة)": "8,500",
+                    "سعر العشر الأوائل": "3,000",
+                    "سعر العشر الوسطى": "2,800",
+                    "سعر العشر الأواخر": "2,700",
+                    "مميز": "جديد"
+                },
+                {
+                    "اسم الفندق": "فندق أبراج البيت",
+                    "تفاصيل الغرفة/الفترة": "غرفة سوبريور - 30 ليلة",
+                    "سعر كامل الشهر (أو المدة المحددة)": "6,200",
+                    "سعر العشر الأوائل": "2,200",
+                    "سعر العشر الوسطى": "2,000",
+                    "سعر العشر الأواخر": "2,000",
+                    "مميز": "-"
+                }
+            ];
+
+            loadHotelsData();
+
+            async function loadHotelsData() {
+                try {
+                    showLoading(true);
+
+                    const response = await fetch(API_URL);
+
+                    if (!response.ok) throw new Error('فشل الاتصال بالخادم');
+
+                    const jsonResponse = await response.json();
+
+                    let data = [];
+                    if (jsonResponse.success && Array.isArray(jsonResponse.data)) {
+                        data = jsonResponse.data;
+                    } else if (Array.isArray(jsonResponse)) {
+                        data = jsonResponse;
+                    } else {
+                        throw new Error('تنسيق البيانات غير صحيح');
+                    }
+
+                    allHotelsData = data;
+                    filteredHotels = [...allHotelsData];
+                    applyFilters();
+
+                } catch (error) {
+                    console.warn('فشل تحميل البيانات الحقيقية، استخدام البيانات الوهمية:', error);
+                    allHotelsData = mockData;
+                    filteredHotels = [...allHotelsData];
+                    applyFilters();
+                } finally {
+                    showLoading(false);
+                }
+            }
+
+            function applyFilters() {
+                const searchTerm = searchInput.value.toLowerCase().trim();
+                const sortValue = sortSelect.value;
+
+                filteredHotels = allHotelsData.filter(hotel => {
+                    const name = (hotel["اسم الفندق"] || "").toLowerCase();
+                    const details = (hotel["تفاصيل الغرفة/الفترة"] || "").toLowerCase();
+                    return name.includes(searchTerm) || details.includes(searchTerm);
+                });
+
+                filteredHotels.sort((a, b) => {
+                    const nameA = (a["اسم الفندق"] || "").toLowerCase();
+                    const nameB = (b["اسم الفندق"] || "").toLowerCase();
+                    const priceA = parsePrice(a["سعر كامل الشهر (أو المدة المحددة)"]);
+                    const priceB = parsePrice(b["سعر كامل الشهر (أو المدة المحددة)"]);
+
+                    switch (sortValue) {
+                        case 'name-asc': return nameA.localeCompare(nameB, 'ar');
+                        case 'name-desc': return nameB.localeCompare(nameA, 'ar');
+                        case 'price-low': return priceA - priceB;
+                        case 'price-high': return priceB - priceA;
+                        default: return 0;
+                    }
+                });
+
+                currentPage = 1;
+                renderTable();
+            }
+
+            function renderTable() {
+                tableBody.innerHTML = '';
+
+                if (filteredHotels.length === 0) {
+                    tableBody.innerHTML = `<tr><td colspan="7" style="padding:30px">لا توجد نتائج مطابقة للبحث</td></tr>`;
+                    paginationContainer.style.display = 'none';
+                    return;
+                }
+
+                const startIndex = (currentPage - 1) * rowsPerPage;
+                const endIndex = Math.min(startIndex + rowsPerPage, filteredHotels.length);
+                const pageData = filteredHotels.slice(startIndex, endIndex);
+
+                pageData.forEach(hotel => {
+                    const isNew = hotel["مميز"] && (hotel["مميز"].toString().includes("جديد") || hotel["مميز"].toString().includes("new"));
+                    const badge = isNew
+                        ? `<span style="color:var(--warning);font-weight:bold">★</span>`
+                        : (hotel["مميز"] || '-');
+
+                    const fullMonth = hotel["سعر كامل الشهر (أو المدة المحددة)"];
+                    const first10 = hotel["سعر العشر الأوائل"];
+                    const mid10 = hotel["سعر العشر الوسطى"];
+                    const last10 = hotel["سعر العشر الأواخر"];
+
+                    const row = `
+                    <tr ${isNew ? 'class="new-hotel"' : ''}>
+                        <td>${badge}</td>
+                        <td><strong>${hotel["اسم الفندق"] || '-'}</strong></td>
+                        <td>${hotel["تفاصيل الغرفة/الفترة"] || '-'}</td>
+                        <td class="${getPriceClass(fullMonth)}">${formatPrice(fullMonth)}</td>
+                        <td class="${getPriceClass(first10)}">${formatPrice(first10)}</td>
+                        <td class="${getPriceClass(mid10)}">${formatPrice(mid10)}</td>
+                        <td class="${getPriceClass(last10)}">${formatPrice(last10)}</td>
+                    </tr>
+                `;
+                    tableBody.innerHTML += row;
+                });
+
+                renderPagination(startIndex + 1, endIndex, filteredHotels.length);
+                tableContainer.style.display = 'block';
+                paginationContainer.style.display = 'flex';
+            }
+
+            function renderPagination(start, end, total) {
+                paginationInfo.textContent = `عرض ${start}-${end} من أصل ${total}`;
+                paginationControls.innerHTML = '';
+
+                const totalPages = Math.ceil(total / rowsPerPage);
+
+                const prevBtn = document.createElement('button');
+                prevBtn.className = 'page-btn';
+                prevBtn.innerHTML = '→';
+                prevBtn.disabled = currentPage === 1;
+                prevBtn.onclick = () => { currentPage--; renderTable(); };
+                paginationControls.appendChild(prevBtn);
+
+                let pagesToShow = [];
+                if (totalPages <= 5) {
+                    pagesToShow = Array.from({ length: totalPages }, (_, i) => i + 1);
+                } else {
+                    if (currentPage <= 3) pagesToShow = [1, 2, 3, 4, '...', totalPages];
+                    else if (currentPage >= totalPages - 2) pagesToShow = [1, '...', totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+                    else pagesToShow = [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
+                }
+
+                pagesToShow.forEach(p => {
+                    const btn = document.createElement('button');
+                    btn.className = `page-btn ${p === currentPage ? 'active' : ''}`;
+                    btn.textContent = p;
+                    if (p === '...') {
+                        btn.disabled = true;
+                    } else {
+                        btn.onclick = () => { currentPage = p; renderTable(); };
+                    }
+                    paginationControls.appendChild(btn);
+                });
+
+                const nextBtn = document.createElement('button');
+                nextBtn.className = 'page-btn';
+                nextBtn.innerHTML = '←';
+                nextBtn.disabled = currentPage === totalPages;
+                nextBtn.onclick = () => { currentPage++; renderTable(); };
+                paginationControls.appendChild(nextBtn);
+            }
+
+            function parsePrice(priceStr) {
+                if (!priceStr) return 99999999;
+                let clean = priceStr.toString().replace(/,/g, '').replace(/[^\d.]/g, '');
+                return parseFloat(clean) || 99999999;
+            }
+
+            function formatPrice(price) {
+                if (!price || price == "-" || price == "غير متاح") return "غير متاح";
+                if (typeof price === 'string' && price.includes(',')) {
+                    return price + " ريال";
+                }
+                if (!isNaN(parseFloat(price))) return parseFloat(price).toLocaleString('ar-SA') + " ريال";
+                return price;
+            }
+
+            function getPriceClass(price) {
+                return (!price || price == "-" || price == "غير متاح") ? 'not-available' : 'price';
+            }
+
+            function showLoading(isLoading) {
+                loadingElement.style.display = isLoading ? 'flex' : 'none';
+                if (isLoading) {
+                    tableContainer.style.display = 'none';
+                    errorContainer.style.display = 'none';
+                }
+            }
+
+            function showError(msg) {
+                errorContainer.style.display = 'block';
+                document.getElementById('error-message').textContent = msg;
+                loadingElement.style.display = 'none';
+            }
+
+            searchInput.addEventListener('input', applyFilters);
+            sortSelect.addEventListener('change', applyFilters);
+            retryBtn.addEventListener('click', loadHotelsData);
+        });
+    </script>
+</body>
+
+</html>
